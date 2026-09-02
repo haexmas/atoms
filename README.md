@@ -22,6 +22,11 @@ same worktree, on the same branch) and answers the prompt there.
 
 **Adopting**
 
+Under the Spec 011 simplification amendment (2026-09-02), adopting a
+workflow atom in `.haex-hive.json` alone binds it. At most one
+workflow atom may be adopted per repository; the reader falls back to
+the bundled `speckit` workflow when none is adopted.
+
 1. Add this atom to the consumer's `.haex-hive.json`:
    ```json
    {
@@ -32,19 +37,15 @@ same worktree, on the same branch) and answers the prompt there.
    ```
 2. Run `haex install --llm=file`. Review the pending constitution
    candidate. Rerun `haex install --accept-merged <candidate>`.
-3. Edit `.specify/workflows/workflow-registry.json` and set
-   `active_workflow` to
-   `com.github.haexmas.atoms.speckit-session-hopper` to make the
-   workflow binding. Unset (or set to `null`) to fall back to the
-   bundled `speckit` workflow.
+
+No third step is needed; the adoption itself is the binding signal.
 
 **Removing**
 
 Remove the atom entry from `.haex-hive.json` and rerun `haex install`.
 The published workflow directory, hook directory, and the constitution
-fragment are removed by Spec 011 US3 delete-orphans; if
-`active_workflow` still named this atom, it is reset to `null` in the
-same generation.
+fragment are removed by Spec 011 US3 delete-orphans. After removal the
+reader falls back to the bundled `speckit` workflow.
 
 ## License
 
