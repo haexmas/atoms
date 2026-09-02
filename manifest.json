@@ -1,0 +1,10 @@
+{
+  "haex_hive_version": "2",
+  "publisher": "com.github.haexmas.atoms",
+  "atoms": {
+    "com.github.haexmas.atoms.speckit-session-hopper": {
+      "path": "speckit-session-hopper",
+      "version": "0.1.0"
+    }
+  }
+}
