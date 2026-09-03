@@ -7,6 +7,29 @@ directory and is registered in the publisher manifest at
 
 ## Atoms
 
+### `graphify-first-authoring`
+
+A constitution-contributing atom that enforces a graphify-first authoring
+workflow: after every commit and every checkout onto a tracked branch, a
+per-repo hook regenerates the graphify snapshot so the constitution's
+"read graphify before authoring" clause stays enforceable.
+
+- Atom id: `com.github.haexmas.atoms.graphify-first-authoring`
+- Kind: `constitution` + git hooks (v3 `atoms.constitution`, plus repo-side
+  `install.py` that materializes hooks into `.git/hooks/`).
+- Path: [`graphify-first-authoring/`](graphify-first-authoring/)
+
+**Adopting**
+
+Add the atom to the consumer's `.haex-hive.json` and run `haex install`.
+See [`graphify-first-authoring/README.md`](graphify-first-authoring/README.md)
+and [`graphify-first-authoring/specs/quickstart.md`](graphify-first-authoring/specs/quickstart.md)
+for the full adoption walkthrough. Publisher-side history and design
+context are preserved verbatim under `graphify-first-authoring/specs/` and
+`graphify-first-authoring/design.md`; those documents were authored while
+the atom lived in the haex-hive repository and still reference the old
+identifiers.
+
 ### `speckit-session-hopper`
 
 A `speckit-workflow` atom (Spec 011 atom kind) that mirrors the bundled
