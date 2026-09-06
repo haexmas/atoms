@@ -1,11 +1,11 @@
 {
-  "haex_hive_version": "2",
+  "haex_hive_version": "3",
   "id": "com.github.haexmas.atoms.speckit-session-hopper",
   "version": "0.1.0",
   "priority": 30,
-  "contributes": {
-    "speckit_workflow": "workflow.yml",
-    "constitution": "constitution.md",
-    "speckit_hooks": "hooks"
+  "atoms": {
+    "speckit_workflow": ["workflow.yml"],
+    "constitution": ["constitution.md"],
+    "speckit_hooks": ["hooks/before-step.sh"]
   }
 }
