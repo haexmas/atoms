@@ -1,14 +1,14 @@
 {
-  "haex_hive_version": "2",
+  "haex_hive_version": "3",
   "publisher": "com.github.haexmas.atoms",
-  "atoms": {
+  "molecules": {
     "com.github.haexmas.atoms.speckit-session-hopper": {
       "path": "speckit-session-hopper",
       "version": "0.1.0"
     },
     "com.github.haexmas.atoms.graphify-first-authoring": {
       "path": "graphify-first-authoring",
-      "version": "0.1.0"
+      "version": "1.0.0"
     }
   }
 }
