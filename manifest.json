@@ -1,5 +1,5 @@
 {
-  "haex_hive_version": "3",
+  "spaex_version": "4",
   "publisher": "com.github.haexmas.atoms",
   "molecules": {
     "com.github.haexmas.atoms.speckit-session-hopper": {

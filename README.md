@@ -1,6 +1,6 @@
 # haexmas/atoms
 
-A collection of [haex-hive](https://github.com/haexmas/haex-hive) atoms
+A collection of [spaex](https://github.com/haexmas/spaex) atoms
 published from a single repository. Every atom lives in its own top-level
 directory and is registered in the publisher manifest at
 [`manifest.json`](manifest.json).
@@ -15,13 +15,13 @@ per-repo hook regenerates the graphify snapshot so the constitution's
 "read graphify before authoring" clause stays enforceable.
 
 - Atom id: `com.github.haexmas.atoms.graphify-first-authoring`
-- Kind: `constitution` + git hooks (v3 `atoms.constitution`, plus repo-side
+- Kind: `constitution` + git hooks (v4 `atoms.constitution`, plus repo-side
   `install.py` that materializes hooks into `.git/hooks/`).
 - Path: [`graphify-first-authoring/`](graphify-first-authoring/)
 
 **Adopting**
 
-Add the atom to the consumer's `.haex-hive.json` and run `haex install`.
+Add the atom to the consumer's `.spaex.json` and run `spaex install`.
 See [`graphify-first-authoring/README.md`](graphify-first-authoring/README.md)
 and [`graphify-first-authoring/specs/quickstart.md`](graphify-first-authoring/specs/quickstart.md)
 for the full adoption walkthrough. Publisher-side history and design
@@ -46,11 +46,11 @@ same worktree, on the same branch) and answers the prompt there.
 **Adopting**
 
 Under the Spec 011 simplification amendment (2026-09-02), adopting a
-workflow atom in `.haex-hive.json` alone binds it. At most one
+workflow atom in `.spaex.json` alone binds it. At most one
 workflow atom may be adopted per repository; the reader falls back to
 the bundled `speckit` workflow when none is adopted.
 
-1. Add this atom to the consumer's `.haex-hive.json`:
+1. Add this atom to the consumer's `.spaex.json`:
    ```json
    {
      "includes": ["com.github.haexmas.atoms.speckit-session-hopper"],
@@ -58,14 +58,14 @@ the bundled `speckit` workflow when none is adopted.
      "source": "https://github.com/haexmas/atoms"
    }
    ```
-2. Run `haex install --llm=file`. Review the pending constitution
-   candidate. Rerun `haex install --accept-merged <candidate>`.
+2. Run `spaex install --llm=file`. Review the pending constitution
+   candidate. Rerun `spaex install --accept-merged <candidate>`.
 
 No third step is needed; the adoption itself is the binding signal.
 
 **Removing**
 
-Remove the atom entry from `.haex-hive.json` and rerun `haex install`.
+Remove the atom entry from `.spaex.json` and rerun `spaex install`.
 The published workflow directory, hook directory, and the constitution
 fragment are removed by Spec 011 US3 delete-orphans. After removal the
 reader falls back to the bundled `speckit` workflow.

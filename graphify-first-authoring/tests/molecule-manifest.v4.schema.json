@@ -1,13 +1,13 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/haexmas/haex-hive/schemas/molecule-manifest.v3.schema.json",
-  "title": "haex-hive Molecule Manifest v3",
-  "description": "Schema for a per-molecule manifest.json. Delivered files are grouped by category in atoms; a molecule is not a composition list.",
+  "$id": "https://github.com/haexmas/spaex/schemas/molecule-manifest.v4.schema.json",
+  "title": "spaex Molecule Manifest v4",
+  "description": "Schema for a per-molecule manifest.json. Delivered files are grouped by category in atoms; a molecule is not a composition list. Structurally identical to v3; only the version-field name (`haex_hive_version` -> `spaex_version`) and value (`3` -> `4`) change.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["haex_hive_version", "id", "version", "priority", "atoms"],
+  "required": ["spaex_version", "id", "version", "priority", "atoms"],
   "properties": {
-    "haex_hive_version": { "const": "3" },
+    "spaex_version": { "const": "4" },
     "id": {
       "$ref": "#/$defs/moleculeId",
       "description": "Reverse-DNS molecule-id. Must equal the publisher-root-manifest key that referenced this molecule."
@@ -19,6 +19,7 @@
     },
     "priority": {
       "type": "integer",
+      "minimum": 0,
       "description": "Publisher's default priority. Consumer configuration may override it."
     },
     "atoms": {
@@ -30,7 +31,7 @@
         "uniqueItems": true,
         "items": { "$ref": "#/$defs/repoRelativePath" }
       },
-      "description": "Category names mapped to non-empty lists of molecule-directory-relative delivered files."
+      "description": "Category names mapped to non-empty lists of molecule-directory-relative delivered files. Category keys are open (any string); common categories include constitution, slash_commands, agents, mcps. Environment-config category naming (dev/staging/prod) is Spec 015 scope; Spec 014 makes no commitment."
     },
     "defaults": {
       "type": "object",

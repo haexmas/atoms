@@ -75,7 +75,7 @@ def _check_current_branch_tracked(repo_root: Path) -> None:
         expected = ", ".join(sorted(tracked)) if tracked else "<none detected>"
         raise InstallError(
             f"Current branch '{branch}' is not tracked (expected one of: {expected}). "
-            "Check out a tracked branch or extend .haex-hive.json's tracked_branches[]."
+            "Check out a tracked branch or extend .spaex.json's tracked_branches[]."
         )
 
 

@@ -1,5 +1,5 @@
 {
-  "haex_hive_version": "3",
+  "spaex_version": "4",
   "id": "com.github.haexmas.atoms.speckit-session-hopper",
   "version": "0.1.0",
   "priority": 30,
