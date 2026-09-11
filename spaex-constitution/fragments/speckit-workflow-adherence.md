@@ -1,7 +1,7 @@
 ---
 id: speckit-workflow-adherence
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST
 tags: [workflow, speckit]
 ---

@@ -1,7 +1,7 @@
 ---
 id: constitution-enforcement-tooling
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST
 tags: [governance, enforcement]
 ---

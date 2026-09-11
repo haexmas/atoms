@@ -70,6 +70,22 @@ The published workflow directory, hook directory, and the constitution
 fragment are removed by Spec 011 US3 delete-orphans. After removal the
 reader falls back to the bundled `speckit` workflow.
 
+### `spaex-constitution`
+
+The spaex project's own constitution: the authoritative `constitution.md`
+text plus a Spec 023 behavior fragment per directive, relocated here from
+the spaex repo's former self-published molecule.
+
+- Atom id: `com.github.haexmas.atoms.spaex-constitution`
+- Kind: constitution fragments (v4 `atoms.behavior`, one file per directive)
+- Path: [`spaex-constitution/`](spaex-constitution/)
+
+**Adopting**
+
+Add the atom to the consumer's `.spaex.json` and run `spaex install`.
+See [`spaex-constitution/README.md`](spaex-constitution/README.md) for
+this molecule's history and governance notes.
+
 ## License
 
 TBD.

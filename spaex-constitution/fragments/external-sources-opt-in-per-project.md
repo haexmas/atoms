@@ -1,7 +1,7 @@
 ---
 id: external-sources-opt-in-per-project
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST_NOT
 tags: [governance, opt-in]
 ---

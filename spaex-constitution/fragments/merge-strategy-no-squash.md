@@ -1,7 +1,7 @@
 ---
 id: merge-strategy-no-squash
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST_NOT
 tags: [workflow, git]
 ---

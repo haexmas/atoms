@@ -1,7 +1,7 @@
 ---
 id: cross-repo-refs-pin-immutable-revisions
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST
 tags: [reproducibility, cross-repo]
 ---

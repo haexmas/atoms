@@ -1,7 +1,7 @@
 ---
 id: no-secrets-in-git
 kind: constitution_fragment
-atom_source: spaex.constitution
+atom_source: atoms.spaex-constitution
 modality: MUST_NOT
 tags: [security, secrets]
 ---
