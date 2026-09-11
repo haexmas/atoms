@@ -9,6 +9,10 @@
     "com.github.haexmas.atoms.graphify-first-authoring": {
       "path": "graphify-first-authoring",
       "version": "1.0.2"
+    },
+    "com.github.haexmas.atoms.spaex-constitution": {
+      "path": "spaex-constitution",
+      "version": "1.4.3"
     }
   }
 }
