@@ -1,0 +1,12 @@
+{
+  "spaex_version": "4",
+  "id": "com.github.haexmas.atoms.python",
+  "version": "0.1.0",
+  "priority": 20,
+  "atoms": {
+    "behavior": [
+      "python.md",
+      "testing.md"
+    ]
+  }
+}

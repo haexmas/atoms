@@ -17,6 +17,22 @@
     "com.github.haexmas.atoms.ponytail": {
       "path": "ponytail",
       "version": "4.9.0"
+    },
+    "com.github.haexmas.atoms.rust": {
+      "path": "rust",
+      "version": "0.1.0"
+    },
+    "com.github.haexmas.atoms.javascript-typescript": {
+      "path": "javascript-typescript",
+      "version": "0.1.0"
+    },
+    "com.github.haexmas.atoms.python": {
+      "path": "python",
+      "version": "0.1.0"
+    },
+    "com.github.haexmas.atoms.general-coding": {
+      "path": "general-coding",
+      "version": "0.1.0"
     }
   }
 }
