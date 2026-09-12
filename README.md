@@ -103,6 +103,34 @@ not mirrored; use Ponytail's native plugin or skill installation for those
 surfaces. See [`ponytail/README.md`](ponytail/README.md) for provenance and
 adoption details.
 
+### Language best practices
+
+The publisher also contains language-specific behavior molecules. Each one is
+deliberately small and can be adopted independently:
+
+- `com.github.haexmas.atoms.rust` — ownership, types, error handling, async
+  code, unsafe code, and Cargo verification; includes Rust testing guidance.
+- `com.github.haexmas.atoms.javascript-typescript` — strict typing, trust
+  boundaries, async control flow, module design, and verification; includes
+  JavaScript/TypeScript testing guidance.
+- `com.github.haexmas.atoms.python` — typing, explicit data models, validation,
+  exceptions, resource management, async code, and verification; includes
+  Python testing guidance.
+
+All three are behavior molecules delivered through `atoms.behavior`. They are
+baseline guidance: a consuming project's explicit conventions and supported
+runtime versions remain authoritative.
+
+### `general-coding`
+
+Language-agnostic coding guidance covering practical LoC heuristics, function
+and file boundaries, module structure, dependency direction, abstractions,
+tests, and reviewable change size.
+
+- Atom id: `com.github.haexmas.atoms.general-coding`
+- Kind: behavior fragment (`atoms.behavior`)
+- Path: [`general-coding/`](general-coding/)
+
 ## License
 
 TBD.
