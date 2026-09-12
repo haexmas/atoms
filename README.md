@@ -26,9 +26,8 @@ See [`graphify-first-authoring/README.md`](graphify-first-authoring/README.md)
 and [`graphify-first-authoring/specs/quickstart.md`](graphify-first-authoring/specs/quickstart.md)
 for the full adoption walkthrough. Publisher-side history and design
 context are preserved verbatim under `graphify-first-authoring/specs/` and
-`graphify-first-authoring/design.md`; those documents were authored while
-the atom lived in the haex-hive repository and still reference the old
-identifiers.
+`graphify-first-authoring/design.md`; those documents retain historical
+source references.
 
 ### `speckit-session-hopper`
 

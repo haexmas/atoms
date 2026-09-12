@@ -1,6 +1,6 @@
 # Quickstart: adopting graphify-first-authoring
 
-This walks through adopting the atom on a repo that already uses haex-hive's Spec 007 manifest v2 (`.haex-hive.json`, `haex install`) — exactly the case haex-hive itself is in.
+This walks through adopting the atom on a repo that already uses spaex's v4 manifest (`.spaex.json`, `spaex install`).
 
 ## 1. Prerequisite: the `graphify` CLI
 
@@ -38,7 +38,7 @@ the directory may have been created by bootstrap, refresh, or a snapshot. On suc
 - `.git/hooks/post-commit` and `.git/hooks/post-checkout` are installed.
 - `.gitignore` gains a `graphify-out/` line, if not already present.
 
-## 3. Adopt the atom in `.haex-hive.json`
+## 3. Adopt the atom in `.spaex.json`
 
 Add an entry to `atoms[]` (alongside any existing constitution atom):
 
@@ -56,7 +56,7 @@ Add an entry to `atoms[]` (alongside any existing constitution atom):
 $ haex install
 ```
 
-If this is the only constitution-contributing atom, the result is a byte-for-byte copy. If haex-hive's own core constitution atom is also adopted (the usual case for haex-hive's own repo), this triggers the LLM-merge path via `haex install --llm=…` — review the merged output before committing.
+If this is the only constitution-contributing atom, the result is a byte-for-byte copy. Run `spaex install` and review the generated `.spaex/constitution.md` before committing.
 
 ## 5. Verify
 
@@ -65,8 +65,7 @@ $ haex constitution show
 ```
 
 The printed "Assembled from" preface should name the adopted constitution
-source(s): one source when this atom is the only constitution-contributing
-atom, or both source atoms in haex-hive's self-adoption case. From this point,
+source(s). From this point,
 any agent bound by this constitution consults `graphify-out/` before authoring
 new named code.
 

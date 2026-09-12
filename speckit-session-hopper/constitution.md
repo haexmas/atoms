@@ -1,7 +1,7 @@
 ## Per-step session isolation
 
 Sessions in a repository that adopts
-`com.github.haexmas.atoms.speckit-session-hopper` in `.haex-hive.json`
+`com.github.haexmas.atoms.speckit-session-hopper` in `.spaex.json`
 MUST, before every `command:` step of that workflow:
 
 1. Execute the step's `hooks.before` script and capture its stdout.
@@ -14,5 +14,5 @@ MUST, before every `command:` step of that workflow:
    the new session's output is on disk.
 
 Under the Spec 011 simplification amendment (2026-09-02), adoption of a
-workflow atom in `.haex-hive.json` alone determines binding: there is
+workflow atom in `.spaex.json` alone determines binding: there is
 no `workflow-registry.json` and no `active_workflow` field.
