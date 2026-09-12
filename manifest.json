@@ -13,6 +13,10 @@
     "com.github.haexmas.atoms.spaex-constitution": {
       "path": "spaex-constitution",
       "version": "2.0.0"
+    },
+    "com.github.haexmas.atoms.ponytail": {
+      "path": "ponytail",
+      "version": "4.9.0"
     }
   }
 }

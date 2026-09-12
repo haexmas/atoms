@@ -1,0 +1,11 @@
+{
+  "spaex_version": "4",
+  "id": "com.github.haexmas.atoms.ponytail",
+  "version": "4.9.0",
+  "priority": 20,
+  "atoms": {
+    "behavior": [
+      "ponytail.md"
+    ]
+  }
+}
