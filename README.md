@@ -86,6 +86,23 @@ Add the atom to the consumer's `.spaex.json` and run `spaex install`.
 See [`spaex-constitution/README.md`](spaex-constitution/README.md) for
 this molecule's history and governance notes.
 
+### `ponytail`
+
+The portable behavior part of
+[DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail): prefer
+YAGNI, existing code, standard-library and native platform features, and the
+smallest correct implementation. It is published as one `atoms.behavior`
+fragment so it can be composed with other spaex behavior atoms.
+
+- Atom id: `com.github.haexmas.atoms.ponytail`
+- Kind: behavior fragment (`atoms.behavior`)
+- Path: [`ponytail/`](ponytail/)
+
+The upstream repository's host-specific plugin files, hooks, and skills are
+not mirrored; use Ponytail's native plugin or skill installation for those
+surfaces. See [`ponytail/README.md`](ponytail/README.md) for provenance and
+adoption details.
+
 ## License
 
 TBD.
