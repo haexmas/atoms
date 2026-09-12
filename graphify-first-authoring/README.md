@@ -3,10 +3,10 @@
 Opt-in molecule that changes agent authoring behavior: **consult the graphify knowledge graph before authoring any new named code, and prefer extending an existing artifact over duplicating it.**
 
 - **Molecule id**: `com.github.haexmas.atoms.graphify-first-authoring`
-- **Delivers**: `atoms.constitution: ["constitution.md"]` (merged into the adopting repo's `.spaex/constitution.md` via `spaex install`)
+- **Delivers**: `atoms.behavior: ["constitution.md"]` (composed into the adopting repo's `.spaex/constitution.md` via `spaex install`)
 - **Also ships**: a `post-commit` hook (auto-refresh `graphify-out/` on tracked branches), a `post-checkout` hook (fork-point snapshot into new worktrees), and an installer for both
 
-Nothing here is part of spaex's core constitution. Adopt it explicitly in your repo's `.spaex.json` if you want it.
+Nothing here is part of spaex's core constitution. Adopt it explicitly in your repo's `.spaex/manifest.json` if you want it.
 
 ## What the rule does
 
@@ -22,7 +22,7 @@ Full text lives in [`constitution.md`](constitution.md).
 
 ## Adoption (quick path)
 
-For a repo that already runs spaex manifest v4 (`.spaex.json`, `spaex install`), see the [quickstart](specs/quickstart.md) — the six steps are:
+For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex install`), see the [quickstart](specs/quickstart.md) — the six steps are:
 
 1. `pip install graphifyy` (or accept the installer's default-Y prompt when the CLI is absent)
 2. Run the installer with the Python command available on your platform: `python3` on Linux/WSL2, or `python3`/`python` on macOS and `python` on Windows.
@@ -39,13 +39,13 @@ For a repo that already runs spaex manifest v4 (`.spaex.json`, `spaex install`),
 
 | Path | Purpose |
 |---|---|
-| `manifest.json` | Molecule manifest v4, `atoms.constitution = ["constitution.md"]` |
-| `constitution.md` | The contributed principle text |
+| `manifest.json` | Molecule manifest v4, `atoms.behavior = ["constitution.md"]` |
+| `constitution.md` | The contributed behavior fragment |
 | `hooks/post-commit` | Refresh entrypoint (shebang set at install time) |
 | `hooks/post-checkout` | Snapshot entrypoint (shebang set at install time) |
 | `hooks/_refresh.py` | Refresh helper — `graphify update <root>`, warn-on-failure |
 | `hooks/_snapshot.py` | Snapshot helper — copy the explicitly selected parent's `graphify-out/` into a new worktree |
-| `hooks/_tracked_branches.py` | Tracked-branch set: detected default + `.spaex.json`'s `tracked_branches[]` |
+| `hooks/_tracked_branches.py` | Tracked-branch set: detected default + `.spaex/manifest.json`'s `tracked_branches[]` |
 | `install.py` | Installer — precondition-checked, refuses cleanly on any failure |
 
 ## What it does not do

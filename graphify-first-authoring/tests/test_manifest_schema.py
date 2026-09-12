@@ -31,10 +31,21 @@ def test_manifest_declares_expected_identity() -> None:
     manifest = _load_json(_MOLECULE_MANIFEST)
     assert manifest["id"] == "com.github.haexmas.atoms.graphify-first-authoring"
     assert manifest["spaex_version"] == "4"
-    assert manifest["atoms"]["constitution"] == ["constitution.md"]
+    assert manifest["atoms"]["behavior"] == ["constitution.md"]
 
 
 def test_contributed_constitution_file_exists() -> None:
     manifest = _load_json(_MOLECULE_MANIFEST)
-    rel = manifest["atoms"]["constitution"][0]
+    rel = manifest["atoms"]["behavior"][0]
     assert (_MOLECULE_MANIFEST.parent / rel).is_file()
+
+
+def test_behavior_fragment_has_required_header() -> None:
+    fragment = (_MOLECULE_MANIFEST.parent / "constitution.md").read_text(
+        encoding="utf-8"
+    )
+    assert fragment.startswith(
+        "---\nid: graphify-first-authoring\n"
+        "kind: constitution_fragment\n"
+        "atom_source: graphify-first-authoring\n"
+    )

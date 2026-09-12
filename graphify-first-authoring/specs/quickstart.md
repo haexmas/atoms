@@ -1,6 +1,6 @@
 # Quickstart: adopting graphify-first-authoring
 
-This walks through adopting the atom on a repo that already uses spaex's v4 manifest (`.spaex.json`, `spaex install`).
+This walks through adopting the atom on a repo that already uses spaex's v4 manifest (`.spaex/manifest.json`, `spaex install`).
 
 ## 1. Prerequisite: the `graphify` CLI
 
@@ -38,13 +38,13 @@ the directory may have been created by bootstrap, refresh, or a snapshot. On suc
 - `.git/hooks/post-commit` and `.git/hooks/post-checkout` are installed.
 - `.gitignore` gains a `graphify-out/` line, if not already present.
 
-## 3. Adopt the atom in `.spaex.json`
+## 3. Adopt the atom in `.spaex/manifest.json`
 
-Add an entry to `atoms[]` (alongside any existing constitution atom):
+Add the molecule id to a `compounds[].molecules[]` allowlist entry:
 
 ```json
 {
-  "includes": ["com.github.haexmas.atoms.graphify-first-authoring"],
+  "molecules": ["com.github.haexmas.atoms.graphify-first-authoring"],
   "revision": "<pinned commit SHA>",
   "source": "https://github.com/haexmas/atoms"
 }
@@ -53,20 +53,19 @@ Add an entry to `atoms[]` (alongside any existing constitution atom):
 ## 4. Install
 
 ```console
-$ haex install
+$ spaex install
 ```
 
-If this is the only constitution-contributing atom, the result is a byte-for-byte copy. Run `spaex install` and review the generated `.spaex/constitution.md` before committing.
+Run `spaex install` and review the generated `.spaex/constitution.md` before committing. The fragment is materialized under `.spaex/constitution.d/` and composed with any other active behavior fragments.
 
 ## 5. Verify
 
 ```console
-$ haex constitution show
+$ spaex constitution show
 ```
 
-The printed "Assembled from" preface should name the adopted constitution
-source(s). From this point,
-any agent bound by this constitution consults `graphify-out/` before authoring
+The printed output should show the adopted behavior fragment. From this point,
+any agent bound by this harness consults `graphify-out/` before authoring
 new named code.
 
 ## 6. Confirm the hooks are live

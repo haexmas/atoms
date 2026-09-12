@@ -55,7 +55,9 @@ def test_default_branch_only(repo_with_default: Path) -> None:
 
 
 def test_config_merges_with_default(repo_with_default: Path) -> None:
-    (repo_with_default / ".spaex.json").write_text(
+    manifest = repo_with_default / ".spaex" / "manifest.json"
+    manifest.parent.mkdir()
+    manifest.write_text(
         json.dumps({"tracked_branches": ["release/2026", "staging"]})
     )
     branches = tb.tracked_branches(repo_with_default)
@@ -72,7 +74,7 @@ def test_missing_spaex_json_is_graceful(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     _init_repo(repo)
     _seed_origin_head(repo, "main")
-    assert not (repo / ".spaex.json").exists()
+    assert not (repo / ".spaex" / "manifest.json").exists()
     branches = tb.tracked_branches(repo)
     assert branches == {"main"}
 
@@ -82,13 +84,17 @@ def test_empty_branch_never_tracked(repo_with_default: Path) -> None:
 
 
 def test_malformed_config_treated_as_empty(repo_with_default: Path) -> None:
-    (repo_with_default / ".spaex.json").write_text("{ not valid json")
+    manifest = repo_with_default / ".spaex" / "manifest.json"
+    manifest.parent.mkdir()
+    manifest.write_text("{ not valid json")
     branches = tb.tracked_branches(repo_with_default)
     assert branches == {"main"}
 
 
 def test_tracked_branches_field_not_a_list_is_ignored(repo_with_default: Path) -> None:
-    (repo_with_default / ".spaex.json").write_text(
+    manifest = repo_with_default / ".spaex" / "manifest.json"
+    manifest.parent.mkdir()
+    manifest.write_text(
         json.dumps({"tracked_branches": "main"})
     )
     assert tb.tracked_branches(repo_with_default) == {"main"}
@@ -97,7 +103,9 @@ def test_tracked_branches_field_not_a_list_is_ignored(repo_with_default: Path) -
 def test_no_origin_head_falls_back_to_config(tmp_path: Path) -> None:
     repo = tmp_path / "repo"
     _init_repo(repo)
-    (repo / ".spaex.json").write_text(
+    manifest = repo / ".spaex" / "manifest.json"
+    manifest.parent.mkdir()
+    manifest.write_text(
         json.dumps({"tracked_branches": ["trunk"]})
     )
     branches = tb.tracked_branches(repo)

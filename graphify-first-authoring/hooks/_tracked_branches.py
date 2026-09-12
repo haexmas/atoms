@@ -2,7 +2,7 @@
 
 Per research.md D4: the tracked-branch set is the repository's auto-detected
 default branch (from ``git symbolic-ref refs/remotes/origin/HEAD``) merged with
-any additional branch names declared in ``.spaex.json``'s optional
+any additional branch names declared in ``.spaex/manifest.json``'s optional
 ``tracked_branches[]`` array.
 """
 
@@ -58,12 +58,12 @@ def _default_branch(repo_root: Path) -> str | None:
 
 
 def _configured_branches(repo_root: Path) -> list[str]:
-    """Return ``tracked_branches[]`` from ``.spaex.json`` if present.
+    """Return ``tracked_branches[]`` from ``.spaex/manifest.json`` if present.
 
     Missing file, unparseable JSON, or a missing/non-list ``tracked_branches``
     field all yield an empty list — the caller must not depend on this raising.
     """
-    config = repo_root / ".spaex.json"
+    config = repo_root / ".spaex" / "manifest.json"
     if not config.is_file():
         return []
     try:
@@ -80,7 +80,7 @@ def tracked_branches(repo_root: Path | None = None) -> set[str]:
     """Return the set of tracked branch names for the current repo.
 
     Recomputes on every call — cheap enough that caching isn't warranted, and a
-    cache would go stale if ``.spaex.json`` changes (data-model.md
+    cache would go stale if ``.spaex/manifest.json`` changes (data-model.md
     §TrackedBranchSet).
     """
     root = repo_root if repo_root is not None else _repo_root()
