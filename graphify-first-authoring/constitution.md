@@ -1,3 +1,9 @@
+---
+id: graphify-first-authoring
+kind: constitution_fragment
+atom_source: graphify-first-authoring
+tags: [graphify, authoring, code-review, maintainability]
+---
 # Principle: graphify-first authoring
 
 **Status**: Opt-in via molecule `com.github.haexmas.atoms.graphify-first-authoring`.
