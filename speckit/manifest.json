@@ -6,6 +6,7 @@
   "atoms": {},
   "speckit": {
     "version_constraint": "1.0.6",
+    "force": true,
     "cli": {
       "package": "specify-cli",
       "version": "1.0.6"
