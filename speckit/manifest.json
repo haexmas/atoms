@@ -1,7 +1,7 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.speckit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "priority": 50,
   "atoms": {},
   "speckit": {
@@ -31,7 +31,9 @@
       "firebender": {},
       "forge": {},
       "gemini": {},
-      "generic": {},
+      "generic": {
+        "integration_options": "--commands-dir .specify/commands"
+      },
       "goose": {},
       "grok": {},
       "hermes": {},
