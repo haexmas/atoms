@@ -24,6 +24,10 @@ For a smaller selection, use a comma-separated list such as
 spaex install lock, so later installs do not prompt or reinstall unchanged
 integrations.
 
+The molecule enables the official CLI's explicit multi-install `--force` flag
+because the declared set includes integrations that the CLI does not mark as
+multi-install safe. This does not enable global installation.
+
 The molecule installs project-local integrations only. It never requests a
 global agent installation and never embeds mutable or agent-specific skill
 content.
