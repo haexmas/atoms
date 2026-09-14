@@ -15,13 +15,15 @@ Adopt and install the molecule in one invocation:
 
 ```bash
 spaex add https://github.com/haexmas/atoms \
-  com.github.haexmas.atoms.speckit \
-  --speckit-agents all
+  com.github.haexmas.atoms.speckit
 ```
 
-For a smaller selection, use a comma-separated list such as
-`--speckit-agents claude,codex`. The selection is persisted in the project's
-spaex install lock, so later installs do not prompt or reinstall unchanged
+The missing `--speckit-agents` flag is intentional: `spaex` shows the declared
+integrations and asks the operator which ones to install. For automation, use
+a comma-separated list such as `--speckit-agents claude,codex`. Never use
+`--speckit-agents all` as an unattended shortcut; spaex requires an interactive
+selection in that case. The selected set is persisted in the project's spaex
+install lock, so later installs do not prompt or reinstall unchanged
 integrations.
 
 The molecule enables the official CLI's explicit multi-install `--force` flag
