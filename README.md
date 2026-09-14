@@ -116,9 +116,9 @@ runtime versions remain authoritative.
 
 ### `general-coding`
 
-Language-agnostic coding guidance covering practical LoC heuristics, function
-and file boundaries, module structure, dependency direction, abstractions,
-tests, and reviewable change size.
+Language-agnostic coding guidance covering repository-local worktrees,
+practical LoC heuristics, function and file boundaries, module structure,
+dependency direction, abstractions, tests, and reviewable change size.
 
 - Atom id: `com.github.haexmas.atoms.general-coding`
 - Kind: behavior fragment (`atoms.behavior`)
