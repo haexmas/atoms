@@ -41,9 +41,11 @@ the molecule.
 - Kind: Spec Kit integration declaration (`speckit`)
 - Path: [`speckit/`](speckit/)
 
-Adopt it with `spaex add` and select all declared integrations using
-`--speckit-agents all`, or choose a comma-separated subset such as
-`claude,codex`. See [`speckit/README.md`](speckit/README.md).
+Adopt it with `spaex add` without a `--speckit-agents` flag. `spaex` will show
+the declared integrations and ask the operator which ones to install. For
+automation, pass an explicit comma-separated subset such as
+`--speckit-agents claude,codex`; never use `--speckit-agents all` as an
+unattended shortcut. See [`speckit/README.md`](speckit/README.md).
 
 ### `spaex-constitution`
 
