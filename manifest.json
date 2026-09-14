@@ -8,7 +8,11 @@
     },
     "com.github.haexmas.atoms.graphify-first-authoring": {
       "path": "graphify-first-authoring",
-      "version": "1.1.0"
+      "version": "1.2.0"
+    },
+    "com.github.haexmas.atoms.ast-grep": {
+      "path": "ast-grep",
+      "version": "0.1.0"
     },
     "com.github.haexmas.atoms.spaex-constitution": {
       "path": "spaex-constitution",

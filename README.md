@@ -19,6 +19,22 @@ per-repo hook regenerates the graphify snapshot so the constitution's
   `install.py` that materializes hooks into `.git/hooks/`).
 - Path: [`graphify-first-authoring/`](graphify-first-authoring/)
 
+The molecule also delivers a `context-map` behavior fragment. It standardizes
+task-scoped, token-bounded context retrieval through `graphify query --budget`
+without introducing a second index or automatically dumping the repository.
+
+### `ast-grep`
+
+An optional behavior molecule for syntax-aware search and rewrites with
+[`ast-grep`](https://github.com/ast-grep/ast-grep). It complements graphify:
+graphify locates relevant domain artifacts, while ast-grep finds structurally
+matching code. The molecule does not install the external binary; when it is
+unavailable, agents fall back to a scoped `rg` search.
+
+- Molecule id: `com.github.haexmas.atoms.ast-grep`
+- Kind: optional behavior fragment (`atoms.behavior`)
+- Path: [`ast-grep/`](ast-grep/)
+
 **Adopting**
 
 Add the atom to the consumer's `.spaex.json` and run `spaex install`.

@@ -3,8 +3,13 @@
 Opt-in molecule that changes agent authoring behavior: **consult the graphify knowledge graph before authoring any new named code, and prefer extending an existing artifact over duplicating it.**
 
 - **Molecule id**: `com.github.haexmas.atoms.graphify-first-authoring`
-- **Delivers**: `atoms.behavior: ["constitution.md"]` (composed into the adopting repo's `.spaex/constitution.md` via `spaex install`)
+- **Delivers**: `atoms.behavior: ["constitution.md", "context-map.md"]` (composed into the adopting repo's `.spaex/constitution.md` via `spaex install`)
 - **Also ships**: a `post-commit` hook (auto-refresh `graphify-out/` on tracked branches), a `post-checkout` hook (fork-point snapshot into new worktrees), and an installer for both
+
+The `context-map` fragment defines a bounded, task-specific context operation
+using the existing `graphify query --budget` interface. It is deliberately
+agent-facing and does not add a second repository index or claim a separate
+CLI command.
 
 Nothing here is part of spaex's core constitution. Adopt it explicitly in your repo's `.spaex/manifest.json` if you want it.
 
@@ -39,8 +44,9 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 
 | Path | Purpose |
 |---|---|
-| `manifest.json` | Molecule manifest v4, `atoms.behavior = ["constitution.md"]` |
+| `manifest.json` | Molecule manifest v4, `atoms.behavior = ["constitution.md", "context-map.md"]` |
 | `constitution.md` | The contributed behavior fragment |
+| `context-map.md` | Token-bounded context-map protocol backed by `graphify query` |
 | `hooks/post-commit` | Refresh entrypoint (shebang set at install time) |
 | `hooks/post-checkout` | Snapshot entrypoint (shebang set at install time) |
 | `hooks/_refresh.py` | Refresh helper — `graphify update <root>`, warn-on-failure |
