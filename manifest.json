@@ -2,13 +2,9 @@
   "spaex_version": "4",
   "publisher": "com.github.haexmas.atoms",
   "molecules": {
-    "com.github.haexmas.atoms.speckit-session-hopper": {
-      "path": "speckit-session-hopper",
-      "version": "0.1.0"
-    },
     "com.github.haexmas.atoms.speckit": {
       "path": "speckit",
-      "version": "1.0.0"
+      "version": "1.1.0"
     },
     "com.github.haexmas.atoms.graphify-first-authoring": {
       "path": "graphify-first-authoring",

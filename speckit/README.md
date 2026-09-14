@@ -5,7 +5,7 @@ agent integrations it supports. It deliberately does not copy Spec Kit skill
 files into the molecule: the official CLI owns each agent's file layout and
 integration semantics.
 
-The molecule is version `1.0.0` and pins `specify-cli==1.0.6`. The declaration
+The molecule is version `1.1.0` and pins `specify-cli==1.0.6`. The declaration
 covers the integration keys reported by `specify-cli 1.0.6`, including Claude
 Code, Codex CLI, Gemini CLI, and the other supported agent/IDE integrations.
 
@@ -27,6 +27,9 @@ integrations.
 The molecule enables the official CLI's explicit multi-install `--force` flag
 because the declared set includes integrations that the CLI does not mark as
 multi-install safe. This does not enable global installation.
+
+The generic integration is configured with `--commands-dir .specify/commands`,
+matching the project's Spec Kit command directory.
 
 The molecule installs project-local integrations only. It never requests a
 global agent installation and never embeds mutable or agent-specific skill
