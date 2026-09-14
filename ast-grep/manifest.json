@@ -1,0 +1,11 @@
+{
+  "spaex_version": "4",
+  "id": "com.github.haexmas.atoms.ast-grep",
+  "version": "0.1.0",
+  "priority": 30,
+  "atoms": {
+    "behavior": [
+      "constitution.md"
+    ]
+  }
+}

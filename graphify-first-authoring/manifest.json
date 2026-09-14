@@ -1,11 +1,12 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.graphify-first-authoring",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "priority": 20,
   "atoms": {
     "behavior": [
-      "constitution.md"
+      "constitution.md",
+      "context-map.md"
     ]
   }
 }
