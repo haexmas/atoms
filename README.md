@@ -69,6 +69,22 @@ The published workflow directory, hook directory, and the constitution
 fragment are removed by Spec 011 US3 delete-orphans. After removal the
 reader falls back to the bundled `speckit` workflow.
 
+### `speckit`
+
+A Spec Kit integration molecule that provisions the pinned official
+`specify-cli` and delegates project-local agent integration installation to
+the official CLI. It includes Codex, Claude, Gemini, and the other integration
+keys supported by `specify-cli 1.0.6`; it does not copy agent skill files into
+the molecule.
+
+- Atom id: `com.github.haexmas.atoms.speckit`
+- Kind: Spec Kit integration declaration (`speckit`)
+- Path: [`speckit/`](speckit/)
+
+Adopt it with `spaex add` and select all declared integrations using
+`--speckit-agents all`, or choose a comma-separated subset such as
+`claude,codex`. See [`speckit/README.md`](speckit/README.md).
+
 ### `spaex-constitution`
 
 The spaex project's own constitution: the authoritative `constitution.md`
