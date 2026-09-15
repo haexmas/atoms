@@ -14,6 +14,7 @@ import jsonschema
 
 _ATOM_DIR = Path(__file__).resolve().parent.parent
 _MOLECULE_MANIFEST = _ATOM_DIR / "manifest.json"
+_PUBLISHER_MANIFEST = _ATOM_DIR.parent / "manifest.json"
 _SCHEMA = Path(__file__).resolve().parent / "molecule-manifest.v4.schema.json"
 
 
@@ -37,6 +38,12 @@ def test_manifest_declares_expected_identity() -> None:
         "script": "install.py",
         "on_failure": "warn",
     }
+    assert manifest["version"] == "1.4.0"
+    publisher = _load_json(_PUBLISHER_MANIFEST)
+    assert (
+        publisher["molecules"][manifest["id"]]["version"]
+        == manifest["version"]
+    )
 
 
 def test_contributed_constitution_file_exists() -> None:
@@ -59,3 +66,10 @@ def test_behavior_fragment_has_required_header() -> None:
             encoding="utf-8"
         )
         assert fragment.startswith(header)
+
+    context_map = (_MOLECULE_MANIFEST.parent / "context-map.md").read_text(
+        encoding="utf-8"
+    )
+    assert "For any question about the codebase" in context_map
+    assert "before a raw `grep`/`rg` search" in context_map
+    assert "local one-file edit at a symbol whose location" in context_map
