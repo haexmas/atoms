@@ -3,7 +3,7 @@
 Behavior atom for Rust projects.
 
 - Atom id: `com.github.haexmas.atoms.rust`
-- Version: `0.1.0`
+- Version: `0.2.0`
 - Delivered atoms: `rust.md` and `testing.md` under `atoms.behavior`
 
 The atoms give coding agents a compact baseline for ownership, types, error

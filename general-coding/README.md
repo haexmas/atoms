@@ -3,7 +3,7 @@
 Behavior atom for language-agnostic coding guidance.
 
 - Atom id: `com.github.haexmas.atoms.general-coding`
-- Version: `0.2.0`
+- Version: `0.3.0`
 - Delivered atom: `general-coding.md` under `atoms.behavior`
 
 The atom covers repository-local worktrees, practical decisions about line
