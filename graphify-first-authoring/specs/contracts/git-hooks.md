@@ -25,7 +25,7 @@ Both hooks are thin entrypoints installed by `install.py` (see [install.cli.md](
 **Behavior**:
 1. If the third argument is not `1`, exit 0 immediately — this hook only cares about branch/worktree checkouts.
 2. If a complete `graphify-out/` containing `graph.json` already exists in the current working directory, exit 0 immediately — never overwrite. An incomplete destination directory is treated as absent and may be replaced after a complete parent graph is found (FR-008 acceptance scenario 2).
-3. Read `GRAPHIFY_PARENT_WORKTREE`, the explicit source-worktree path supplied by the supported creation command. If it is absent, not a registered worktree, or resolves to the current worktree, exit 0 — do not guess a parent; the agent's backstop handles the missing snapshot.
+3. If `GRAPHIFY_PARENT_WORKTREE` is set, validate it as a registered source worktree and use it. Otherwise, inspect Git's registered worktrees and select the worktree whose `HEAD` equals `<new-head-sha>` and whose branch is in the tracked-branch set. This identifies the `main`/`develop` source used by normal `git worktree add` without relying on worktree-list order. If no source matches, exit 0 — the agent's backstop handles the missing snapshot.
 4. If the selected parent has no complete `graphify-out/` with `graph.json` (fresh repo, failed/incomplete index), exit 0 — nothing to copy; the agent's failed-consultation handling applies on feature branches.
 5. Otherwise, copy the selected parent's `graphify-out/` into the current working directory's `graphify-out/`, recursively, preserving the freshness marker as-is (it reflects the fork-point commit).
 

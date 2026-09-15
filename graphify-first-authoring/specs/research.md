@@ -20,14 +20,16 @@ No `[NEEDS CLARIFICATION]` markers remain in the Technical Context — the prece
 
 ## D3. Worktree/feature-branch graph handling: snapshot, not symlink
 
-**Decision**: `post-checkout` copies `graphify-out/` from the explicitly
-selected parent worktree into a newly created worktree. The supported creation
-command passes that path through `GRAPHIFY_PARENT_WORKTREE`; Git does not expose
-the source worktree to the hook, so the hook must not infer it from list order.
+**Decision**: `post-checkout` copies `graphify-out/` from the tracked source
+worktree whose HEAD equals the new checkout HEAD into a newly created worktree.
+An explicit `GRAPHIFY_PARENT_WORKTREE` override selects a registered source for
+feature-from-feature worktrees. Git does not expose the source worktree path,
+but it does provide the new HEAD; matching that against registered tracked
+worktrees identifies the normal `main`/`develop` source deterministically.
 
 **Rationale**: A symlink was considered and rejected — not because of a genuine Windows blocker (symlinks work fine within this constitution's declared OS scope: Linux/macOS/WSL2), but because a snapshot is *semantically correct*: the feature branch is meant to see the pre-branch fork-point state, not a live view of the tracked branch's ongoing changes. A snapshot also degrades gracefully — it is simply discarded with the branch, no cleanup logic needed, and it works even if the constitution's OS scope is ever widened to native Windows without WSL.
 
-**Alternatives considered**: Symlink (rejected for the semantic reason above, not portability); an environment-variable indirection (`HAEX_GRAPHIFY_OUT`) (rejected — would require every consuming tool to honor a non-standard env var, whereas a plain directory copy needs no cooperation from anything).
+**Alternatives considered**: Symlink (rejected for the semantic reason above, not portability); selecting the first registered worktree (rejected because worktree-list order is not parentage); requiring an environment variable for every creation (rejected because normal `git worktree add` does not set one).
 
 ## D4. Tracked-branch detection
 

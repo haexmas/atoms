@@ -35,6 +35,11 @@ def _init_parent(root: Path) -> Path:
     (root / "README.md").write_text("hi\n")
     _git(root, "add", ".")
     _git(root, "commit", "-q", "-m", "init")
+    remotes = root / ".git" / "refs" / "remotes" / "origin"
+    remotes.mkdir(parents=True)
+    head = _git(root, "rev-parse", "HEAD")
+    (remotes / "main").write_text(f"{head}\n")
+    (remotes / "HEAD").write_text("ref: refs/remotes/origin/main\n")
     graph = root / "graphify-out"
     graph.mkdir()
     (graph / ".meta.json").write_text(
@@ -76,8 +81,6 @@ def test_worktree_add_triggers_snapshot_copy(
     tmp_path: Path,
 ) -> None:
     child = tmp_path / "child"
-    env = os.environ.copy()
-    env["GRAPHIFY_PARENT_WORKTREE"] = str(parent_repo_with_hook)
     _git(
         parent_repo_with_hook,
         "worktree",
@@ -86,7 +89,6 @@ def test_worktree_add_triggers_snapshot_copy(
         "-b",
         "feature/x",
         str(child),
-        env=env,
     )
 
     child_graph = child / "graphify-out"

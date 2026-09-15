@@ -62,21 +62,21 @@ When an operator creates a new worktree or feature branch off a tracked branch, 
 
 **Acceptance Scenarios**:
 
-1. **Given** a tracked branch has an existing `graphify-out/` and the supported creation command supplies that worktree as `GRAPHIFY_PARENT_WORKTREE`, **When** a new worktree is created from it, **Then** the new worktree's `graphify-out/` is populated as a copy of the parent's graph.
+1. **Given** a tracked branch has an existing `graphify-out/`, **When** a new worktree is created from it with the normal `git worktree add` command, **Then** the new worktree's `graphify-out/` is populated as a copy of the parent's graph without requiring an environment variable.
 2. **Given** the new worktree already has a complete `graphify-out/` containing `graph.json`, **When** the worktree-creation hook fires, **Then** it does not overwrite the existing directory.
 3. **Given** the new worktree has an incomplete `graphify-out/` without `graph.json`, **When** the worktree-creation hook fires, **Then** it replaces that incomplete directory with the complete parent snapshot.
-4. **Given** the parent branch has no complete `graphify-out/` or no explicit source signal is supplied, **When** a new worktree is created from it, **Then** nothing is copied, and the agent's failed-consultation handling applies without rebuilding against feature `HEAD`.
+4. **Given** the parent branch has no complete `graphify-out/` or no registered tracked source matches the new checkout HEAD, **When** a new worktree is created, **Then** nothing is copied, and the agent's failed-consultation handling applies without rebuilding against feature `HEAD`.
 5. **Given** work on the feature branch is later merged back into a tracked branch, **When** the worktree/branch is deleted, **Then** its snapshot is discarded with it and never reaches version control.
 
 ---
 
 ### User Story 4 — Adoption is a single command, not a scavenger hunt (Priority: P3)
 
-An operator adopting this atom should not have to separately discover and install graphify themselves, work out which git-hook shebang their platform needs, or risk clobbering an existing hook setup. Running the atom's installer once handles all of it: it verifies the `graphify` CLI is present, offers to register it with the operator's current agent harness, installs the git hooks with a platform-correct interpreter, and adds `graphify-out/` to `.gitignore`.
+An operator adopting this atom should not have to separately discover and install graphify themselves, work out which git-hook shebang their platform needs, or risk clobbering an existing hook setup. Running `spaex install` invokes the atom's declared installer hook: it verifies the `graphify` CLI is present, offers to register it with the operator's current agent harness, installs the git hooks with a platform-correct interpreter, and adds `graphify-out/` to `.gitignore`.
 
 **Why this priority**: Convenience and safety, not core value — User Stories 1–3 already work once these prerequisites are met by any means. This just makes meeting them a single reviewable step instead of several manual ones prone to platform-specific mistakes.
 
-**Independent Test**: Run the installer in a fresh clone that has the `graphify` CLI on PATH but no hooks installed. Verify: hooks appear under `.git/hooks/` with a shebang matching an interpreter actually present on the machine, `graphify-out/` is added to `.gitignore`, and the operator is prompted (not auto-committed without asking) about registering graphify with their harness.
+**Independent Test**: Run `spaex install` in a fresh clone that has the `graphify` CLI on PATH but no hooks installed. Verify: the declared installer hook runs, hooks appear under `.git/hooks/` with a shebang matching an interpreter actually present on the machine, `graphify-out/` is added to `.gitignore`, and the operator is prompted (not auto-committed without asking) about registering graphify with their harness.
 
 **Acceptance Scenarios**:
 
@@ -108,7 +108,7 @@ An operator adopting this atom should not have to separately discover and instal
 - **FR-005**: The contributed principle MUST allow the operator to suspend it for a single session via an explicit instruction, and the suspension MUST NOT persist beyond that session.
 - **FR-006**: The atom MUST provide a git `post-commit` hook that incrementally refreshes `graphify-out/` after every commit on a tracked branch. If the refresh invocation itself fails, the hook MUST warn rather than block — the commit MUST succeed regardless, leaving the freshness marker stale for the agent-side backstop (FR-010) to catch on next use.
 - **FR-007**: Tracked branches MUST be determined as the repository's auto-detected default branch, plus any additional branches declared in `.haex-hive.json`'s `tracked_branches[]`.
-- **FR-008**: The atom MUST provide a git `post-checkout` hook that copies a complete `graphify-out/` containing `graph.json` from the explicitly signaled parent worktree into a newly created worktree, if a complete graph is not already present there. An incomplete destination may be replaced; a complete destination MUST NOT be overwritten. Without the source signal, the hook MUST NOT guess a parent.
+- **FR-008**: The atom MUST provide a git `post-checkout` hook that copies a complete `graphify-out/` containing `graph.json` from the tracked source worktree whose HEAD matches the new checkout HEAD into a newly created worktree, if a complete graph is not already present there. `GRAPHIFY_PARENT_WORKTREE` MAY explicitly select a registered source worktree for feature-from-feature worktrees. An incomplete destination may be replaced; a complete destination MUST NOT be overwritten. If no source matches, the hook MUST no-op.
 - **FR-009**: `graphify-out/` MUST never be committed to version control in an adopting repo.
 - **FR-010**: The contributed principle's freshness requirement on tracked branches (bootstrap when `graphify-out/` or its required `graph.json` is absent/incomplete, refresh when the marker is absent/invalid or stale) MUST hold for the agent even when the git hooks are not installed or have been bypassed. A feature-branch snapshot remains frozen; an incomplete snapshot is warned about and handled as a failed consultation rather than refreshed against feature `HEAD`.
 - **FR-011**: The atom's installer MUST verify the `graphify` CLI is present on PATH. If absent, it MUST prompt the operator to install it via `sys.executable -m pip install graphifyy` using the invoking Python interpreter (default Yes); on decline, pip failure, or failed PATH re-check, the installer MUST refuse with actionable instructions, making no other changes.
@@ -118,6 +118,7 @@ An operator adopting this atom should not have to separately discover and instal
 - **FR-015**: Git hooks installed by the atom MUST use a shebang resolved at install time to whichever of `python3`/`python` is actually present on the installing machine's PATH.
 - **FR-016**: The contributed principle text MUST reference plain `graphify` CLI invocations rather than any single agent harness's specific invocation syntax.
 - **FR-017**: The atom's installer MUST add `graphify-out/` to the adopting repo's `.gitignore` if not already present.
+- **FR-018**: The molecule manifest MUST declare `install.py` as an `install_hook` with interpreter `python3` and `on_failure: "warn"`, so `spaex install` invokes the installer after materializing the molecule.
 
 ### Key Entities
 

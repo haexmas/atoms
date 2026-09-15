@@ -40,6 +40,11 @@ def parent_with_graph(tmp_path: Path) -> tuple[Path, Path]:
     (parent / "README.md").write_text("hi\n")
     _git(parent, "add", ".")
     _git(parent, "commit", "-q", "-m", "init")
+    remotes = parent / ".git" / "refs" / "remotes" / "origin"
+    remotes.mkdir(parents=True)
+    head = _git(parent, "rev-parse", "HEAD")
+    (remotes / "main").write_text(f"{head}\n")
+    (remotes / "HEAD").write_text("ref: refs/remotes/origin/main\n")
 
     graph = parent / "graphify-out"
     graph.mkdir()
@@ -68,6 +73,16 @@ def test_copies_when_absent_locally(
     meta = json.loads((child / "graphify-out" / ".meta.json").read_text())
     parent_head = _git(parent, "rev-parse", "HEAD")
     assert meta["indexed_at_sha"] == parent_head
+
+
+def test_copies_from_tracked_parent_without_explicit_signal(
+    parent_with_graph: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    parent, child = parent_with_graph
+    monkeypatch.delenv(_snapshot._PARENT_WORKTREE_ENV, raising=False)
+
+    assert _snapshot.snapshot(child, _git(parent, "rev-parse", "HEAD")) is True
+    assert (child / "graphify-out" / "graph.json").is_file()
 
 
 def test_noop_when_already_present(parent_with_graph: tuple[Path, Path]) -> None:
@@ -122,7 +137,7 @@ def test_noop_when_parent_has_no_graph(tmp_path: Path) -> None:
     assert not (child / "graphify-out").exists()
 
 
-def test_noop_without_explicit_parent_signal(
+def test_noop_without_checkout_head_or_explicit_parent_signal(
     parent_with_graph: tuple[Path, Path], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     _, child = parent_with_graph

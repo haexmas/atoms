@@ -32,6 +32,11 @@ def test_manifest_declares_expected_identity() -> None:
     assert manifest["id"] == "com.github.haexmas.atoms.graphify-first-authoring"
     assert manifest["spaex_version"] == "4"
     assert manifest["atoms"]["behavior"] == ["constitution.md", "context-map.md"]
+    assert manifest["install_hook"] == {
+        "interpreter": "python3",
+        "script": "install.py",
+        "on_failure": "warn",
+    }
 
 
 def test_contributed_constitution_file_exists() -> None:

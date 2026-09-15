@@ -40,6 +40,20 @@
     "config_schema": {
       "$ref": "#/$defs/repoRelativePath",
       "description": "Path (molecule-directory-relative) to the molecule's config JSON Schema."
+    },
+    "install_hook": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["interpreter", "script"],
+      "properties": {
+        "interpreter": { "type": "string", "minLength": 1 },
+        "script": { "$ref": "#/$defs/repoRelativePath" },
+        "args": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "on_failure": { "enum": ["abort", "warn"] }
+      }
     }
   },
   "$defs": {
