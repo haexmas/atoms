@@ -3,14 +3,15 @@
 Behavior atom for language-agnostic coding guidance.
 
 - Atom id: `com.github.haexmas.atoms.general-coding`
-- Version: `0.3.0`
+- Version: `0.4.0`
 - Delivered atom: `general-coding.md` under `atoms.behavior`
 
 The atom covers repository-local worktrees, practical decisions about line
 counts, function and file boundaries, module structure, dependencies,
 abstractions, tests, and review size. Its thresholds are intentionally soft
-prompts, not hard quality gates. Repository-specific conventions remain
-authoritative.
+prompts, not hard quality gates. It also prohibits LLM agents from leaving
+self-references or agent attribution in project artifacts. Repository-specific
+conventions remain authoritative.
 
 ## Adopting
 
