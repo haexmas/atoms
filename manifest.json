@@ -24,7 +24,7 @@
     },
     "com.github.haexmas.atoms.rust": {
       "path": "rust",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     "com.github.haexmas.atoms.javascript-typescript": {
       "path": "javascript-typescript",
@@ -36,7 +36,7 @@
     },
     "com.github.haexmas.atoms.general-coding": {
       "path": "general-coding",
-      "version": "0.2.0"
+      "version": "0.3.0"
     }
   }
 }
