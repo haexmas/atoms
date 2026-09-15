@@ -27,30 +27,28 @@ Full text lives in [`constitution.md`](constitution.md).
 
 ## Adoption (quick path)
 
-For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex install`), see the [quickstart](specs/quickstart.md) — the six steps are:
+For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex install`), see the [quickstart](specs/quickstart.md) for the complete adoption flow:
 
-1. `pip install graphifyy` (or accept the installer's default-Y prompt when the CLI is absent)
-2. Run the installer with the Python command available on your platform: `python3` on Linux/WSL2, or `python3`/`python` on macOS and `python` on Windows.
-3. Add a `compounds[]` entry with this molecule id, pinned to a full SHA of this repo:
+1. Add a `compounds[]` entry with this molecule id, pinned to a full SHA of this repo:
 
    ```json
    {"spaex_version": "4", "compounds": [{"source": "https://github.com/haexmas/atoms", "revision": "<full 40-char SHA>", "molecules": ["com.github.haexmas.atoms.graphify-first-authoring"]}]}
    ```
-4. `spaex install`
-5. `spaex constitution show` — verifies the installed constitution
-6. `git commit --allow-empty -m "chore: test refresh"` — verifies the hook is live
+2. `spaex install` — materializes the behavior and runs the declared installer hook. If `graphify` is absent, the installer offers to install `graphifyy`.
+3. `spaex constitution show` — verifies the installed constitution
+4. `git commit --allow-empty -m "chore: test refresh"` — verifies the hook is live
 
 ## Files
 
 | Path | Purpose |
 |---|---|
-| `manifest.json` | Molecule manifest v4, `atoms.behavior = ["constitution.md", "context-map.md"]` |
+| `manifest.json` | Molecule manifest v4, behavior files plus the `install.py` hook declaration |
 | `constitution.md` | The contributed behavior fragment |
 | `context-map.md` | Token-bounded context-map protocol backed by `graphify query` |
 | `hooks/post-commit` | Refresh entrypoint (shebang set at install time) |
 | `hooks/post-checkout` | Snapshot entrypoint (shebang set at install time) |
 | `hooks/_refresh.py` | Refresh helper — `graphify update <root>`, warn-on-failure |
-| `hooks/_snapshot.py` | Snapshot helper — copy the explicitly selected parent's `graphify-out/` into a new worktree |
+| `hooks/_snapshot.py` | Snapshot helper — copy the tracked source branch's `graphify-out/` into a new worktree |
 | `hooks/_tracked_branches.py` | Tracked-branch set: detected default + `.spaex/manifest.json`'s `tracked_branches[]` |
 | `install.py` | Installer — precondition-checked, refuses cleanly on any failure |
 
@@ -61,7 +59,7 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 - It does **not** silently install anything into your Python environment (the installer prompts before `sys.executable -m pip install graphifyy`). It also prompts before `graphify install` when the local registration marker is absent, records successful registration in local git config, and skips that step only when the marker is present. `graphify-out/` presence alone is not a registration signal.
 - If graph bootstrap or refresh fails, the agent warns and continues; the failed refresh is flagged for a later manual check.
 - It does **not** cause git operations to fail — both hooks always exit 0 regardless of whether their work succeeded.
-- Worktree snapshots require `GRAPHIFY_PARENT_WORKTREE` to name the source worktree; the hook never guesses a parent from worktree-list order.
+- Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. Set `GRAPHIFY_PARENT_WORKTREE` when creating a worktree from another linked worktree.
 
 ## Suspending for one session
 

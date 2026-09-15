@@ -44,7 +44,7 @@ molecule IDs or a second packaging layer.
     post-commit          # thin entrypoint → _refresh.py
     post-checkout        # thin entrypoint → _snapshot.py
     _refresh.py          # freshness check + incremental graphify reindex
-    _snapshot.py         # copies graphify-out/ from the explicitly selected parent worktree
+    _snapshot.py         # copies graphify-out/ from the tracked source worktree
   install.py             # see "Adoption" below
   README.md              # operator docs: adoption, config, escape hatch
 ```
@@ -137,11 +137,12 @@ read correctly regardless of which harness executes it.
   the graph is missing).
 - **Worktree/feature-branch creation** fires `post-checkout`, which copies
   (not symlinks — Windows-portable, and semantically correct as a fork-point
-  view) the explicitly selected parent worktree's `graphify-out/` in. The
-  supported creation command supplies `GRAPHIFY_PARENT_WORKTREE`; the hook
-  never assumes the first entry from `git worktree list --porcelain` is the
-  source. Feature branches and their snapshots are discarded together; nothing
-  survives the branch.
+  view) the tracked source worktree's `graphify-out/` in. The hook matches the
+  new checkout HEAD against registered tracked worktrees, so normal
+  `git worktree add` needs no extra environment variable. `GRAPHIFY_PARENT_WORKTREE`
+  remains available for worktrees created from another linked worktree. Feature
+  branches and their snapshots are discarded together; nothing survives the
+  branch.
 - **Merging a feature branch back into a tracked branch** needs no special
   graph-merge logic — the merge commit lands *on* the tracked branch and
   fires the same `post-commit` hook as any other commit.

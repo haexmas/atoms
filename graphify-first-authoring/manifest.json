@@ -1,12 +1,17 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.graphify-first-authoring",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "priority": 20,
   "atoms": {
     "behavior": [
       "constitution.md",
       "context-map.md"
     ]
+  },
+  "install_hook": {
+    "interpreter": "python3",
+    "script": "install.py",
+    "on_failure": "warn"
   }
 }

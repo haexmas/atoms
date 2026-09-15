@@ -1,12 +1,13 @@
 """Fork-point snapshot of ``graphify-out/`` for the post-checkout hook.
 
 Per contracts/git-hooks.md §post-checkout and FR-008: when a new worktree is
-created with ``GRAPHIFY_PARENT_WORKTREE`` set to its parent, copy that
-parent's complete ``graphify-out/``
-(including ``graph.json``) into the new one so the feature branch sees a
-correct fork-point graph immediately. Never overwrite an existing
-complete ``graphify-out/`` in the new worktree. An incomplete destination is
-treated as absent and replaced once a complete parent graph is available.
+created from a tracked branch, copy that branch worktree's complete
+``graphify-out/`` (including ``graph.json``) into the new one so the feature
+branch sees a correct fork-point graph immediately. An explicit
+``GRAPHIFY_PARENT_WORKTREE`` override supports worktrees created from another
+linked worktree. Never overwrite an existing complete ``graphify-out/`` in the
+new worktree. An incomplete destination is treated as absent and replaced
+once a complete parent graph is available.
 Never raise — warn to stderr on any failure, so the calling hook can always
 exit 0 and the underlying ``git worktree add``/``git checkout`` cannot be
 affected.
@@ -21,25 +22,13 @@ import subprocess
 import sys
 from pathlib import Path
 
+import _tracked_branches
+
 _PARENT_WORKTREE_ENV = "GRAPHIFY_PARENT_WORKTREE"
 
 
-def _parent_worktree(current: Path) -> Path | None:
-    """Return the explicit source worktree selected for this checkout.
-
-    Git's ``post-checkout`` hook receives no source-worktree path. The supported
-    worktree creation path therefore passes ``GRAPHIFY_PARENT_WORKTREE`` and
-    this function validates that path against the repository's registered
-    worktrees instead of guessing from list order.
-    """
-    source_value = os.environ.get(_PARENT_WORKTREE_ENV)
-    if not source_value:
-        return None
-
-    source = Path(source_value).expanduser().resolve()
-    if source == current.resolve():
-        return None
-
+def _registered_worktrees(current: Path) -> list[tuple[Path, str, str | None]]:
+    """Return registered worktrees as ``(path, head, branch)`` records."""
     try:
         proc = subprocess.run(
             ["git", "-C", str(current), "worktree", "list", "--porcelain"],
@@ -47,27 +36,83 @@ def _parent_worktree(current: Path) -> Path | None:
             text=True,
             check=True,
         )
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
-    for line in proc.stdout.splitlines():
+    except (OSError, subprocess.CalledProcessError):
+        return []
+
+    records: list[tuple[Path, str, str | None]] = []
+    path: Path | None = None
+    head = ""
+    branch: str | None = None
+    for line in proc.stdout.splitlines() + [""]:
         if line.startswith("worktree "):
-            registered = Path(line[len("worktree "):].strip()).resolve()
+            if path is not None:
+                records.append((path, head, branch))
+            path = Path(line[len("worktree "):].strip()).resolve()
+            head = ""
+            branch = None
+        elif line.startswith("HEAD "):
+            head = line[len("HEAD "):].strip()
+        elif line.startswith("branch "):
+            branch = line[len("branch "):].strip()
+        elif not line and path is not None:
+            records.append((path, head, branch))
+            path = None
+
+    return records
+
+
+def _branch_name(ref: str | None) -> str | None:
+    """Convert a worktree branch ref to the short local branch name."""
+    prefix = "refs/heads/"
+    if ref is None or not ref.startswith(prefix):
+        return None
+    return ref[len(prefix):]
+
+
+def _parent_worktree(current: Path, new_head: str | None = None) -> Path | None:
+    """Return the source worktree selected for this checkout.
+
+    An explicit ``GRAPHIFY_PARENT_WORKTREE`` is authoritative and is validated
+    against Git's registered worktrees. Otherwise, select the tracked-branch
+    worktree whose HEAD equals the new checkout HEAD. Git supplies that HEAD to
+    ``post-checkout`` for ``git worktree add``; matching it avoids guessing from
+    worktree-list order and keeps ``main``/``develop`` snapshots distinct.
+    """
+    records = _registered_worktrees(current)
+    current_resolved = current.resolve()
+    source_value = os.environ.get(_PARENT_WORKTREE_ENV)
+    if source_value:
+        source = Path(source_value).expanduser().resolve()
+        if source == current_resolved:
+            return None
+        for registered, _, _ in records:
             if registered == source:
                 return source
+        return None
+
+    if not new_head:
+        return None
+    tracked = _tracked_branches.tracked_branches(current)
+    for registered, head, branch_ref in records:
+        branch = _branch_name(branch_ref)
+        if (
+            registered != current_resolved
+            and head == new_head
+            and branch in tracked
+        ):
+            return registered
     return None
 
 
-def snapshot(current_worktree: Path) -> bool:
-    """Copy the explicitly selected parent graph into ``current_worktree``.
+def snapshot(current_worktree: Path, new_head: str | None = None) -> bool:
+    """Copy the selected parent graph into ``current_worktree``.
 
     Returns ``True`` if a copy was performed, ``False`` on any no-op or
     failure. A ``False`` return is silent when the situation is a legitimate
     no-op (destination exists, no parent, parent has no complete graph) and
     warns to stderr only on genuine failure (a partial copy that had to be
-    rolled back). Without ``GRAPHIFY_PARENT_WORKTREE`` or with an unregistered
-    source, it is a silent no-op so the agent-side backstop can handle it. An
-    incomplete destination directory is removed only after a complete parent
-    graph has been found. Never raises.
+    rolled back). An incomplete destination directory is removed only after a
+    complete parent graph has been found. Never raises.
     """
     dest = current_worktree / "graphify-out"
     if dest.exists() and (
@@ -75,7 +120,7 @@ def snapshot(current_worktree: Path) -> bool:
     ):
         return False
 
-    parent = _parent_worktree(current_worktree)
+    parent = _parent_worktree(current_worktree, new_head)
     if parent is None:
         return False
 

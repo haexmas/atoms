@@ -9,8 +9,14 @@ Conforms to Spec 007's existing `atom-manifest.v2.schema.json` — no schema cha
 | Field | Type | Value for this atom |
 |---|---|---|
 | `contributes.constitution` | string (relative path) | `"constitution.md"` |
+| `install_hook.interpreter` | string | `"python3"` |
+| `install_hook.script` | string (relative path) | `"install.py"` |
+| `install_hook.on_failure` | enum | `"warn"` |
 
-**Lifecycle**: authored once at implementation time, versioned in git, read by `haex constitution assemble` on every adopting repo (including haex-hive itself).
+**Lifecycle**: authored once at implementation time, versioned in git, read by
+`spaex install` on every adopting repo. The behavior files are assembled into
+the consumer constitution and the declared installer hook provisions the local
+Git hooks and graphify prerequisites.
 
 ## ContributedConstitutionText (constitution.md)
 
