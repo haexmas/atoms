@@ -4,7 +4,7 @@ Portable spaex behavior atom derived from
 [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail).
 
 - Atom id: `com.github.haexmas.atoms.ponytail`
-- Version: `4.9.1`
+- Version: `4.9.2`
 - Upstream revision: `356918eba965ee1eac64bd3a7f0dd02108350de5`
 - Delivered atom: `ponytail.md` under `atoms.behavior`
 
