@@ -1,14 +1,27 @@
 # Nix devShell skeleton
 
 Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
-repo root: `flake.nix`, `.envrc`, and a `.direnv/` `.gitignore` entry.
+repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.1.0`
-- Delivered atoms: `flake.nix`, `.envrc`, `.gitignore` under
-  `atoms.dev_environment` — an *exclusive* generic atom category (spaex
-  Spec 027): materialized verbatim at the consumer repo root, owned by
-  this one molecule, and removed again by `spaex remove`.
+- Version: `0.2.0`
+- Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
+  an *exclusive* generic atom category (spaex Spec 027): materialized
+  verbatim at the consumer repo root, owned by this one molecule, and
+  removed again by `spaex remove`.
+
+**Does not deliver `.gitignore`.** An exclusive atom is rewritten
+verbatim on *every* `spaex install`, not just the first — for `flake.nix`
+that is correct (this molecule is its sole, authoritative source), but a
+`.gitignore` typically already carries a consumer's own project-specific
+rules (build output, env files, editor/OS cruft, ...) that this molecule
+has no way to know about. Shipping `.gitignore` here would silently
+overwrite those rules on every install, repeatedly, even after an
+operator manually restores them. (Caught live adopting this molecule
+into `holzi`, whose existing `.gitignore` — including its `.env` and
+`.claude/` credential-safety rules — was clobbered down to one line on
+first install; v0.1.0 shipped this bug.) Add `.direnv/` to your own
+`.gitignore` once, by hand, instead.
 
 ## How it composes with other molecules
 

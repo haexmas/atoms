@@ -1,13 +1,12 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.nix-devshell-base",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "priority": 20,
   "atoms": {
     "dev_environment": [
       "flake.nix",
-      ".envrc",
-      ".gitignore"
+      ".envrc"
     ]
   }
 }

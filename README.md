@@ -130,8 +130,8 @@ dependency direction, abstractions, tests, and reviewable change size.
 
 [`com.github.haexmas.atoms.nix-devshell-base`](nix-devshell-base/) delivers
 a reproducible `nix develop`/`direnv` devShell skeleton (`flake.nix`,
-`.envrc`, `.gitignore`) to a consumer's repo root via spaex Spec 027's
-exclusive `atoms.dev_environment` category. It ships no packages itself;
+`.envrc`) to a consumer's repo root via spaex Spec 027's exclusive
+`atoms.dev_environment` category. It ships no packages itself;
 adopt it alongside language molecules that contribute a package fragment
 via the composable `atoms.nix_packages` category (`rust`,
 `javascript-typescript`) and, for holzi specifically,
