@@ -40,11 +40,11 @@
     },
     "com.github.haexmas.atoms.nix-devshell-base": {
       "path": "nix-devshell-base",
-      "version": "0.3.0"
+      "version": "0.4.0"
     },
     "com.github.haexmas.atoms.holzi": {
       "path": "holzi",
-      "version": "0.1.0"
+      "version": "0.2.0"
     },
     "com.github.haexmas.atoms.nix-rust": {
       "path": "nix-rust",
