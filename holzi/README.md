@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.1.0`
+- Version: `0.2.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages` — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
@@ -22,6 +22,15 @@ molecule: the package list (`webkitgtk_4_1`, `libayatana-appindicator`,
 Linux build-dependency list, not a researched general Tauri baseline. If a
 second Tauri app wants the same set, generalize then — not speculatively
 now.
+
+`cudatoolkit` (v0.2.0) is the one exception not mirrored from CI: CI has
+no GPU, so it never builds holzi's `llm-cuda` feature. It's here for the
+manual `pnpm tauri:dev:cuda`/`tauri:build:cuda` smoke test on a
+CUDA-capable dev machine (Etappe-0 finding #3 — `mistralrs/cuda`'s
+`cudarc` build script needs `nvcc` on `PATH`). It's an unfree package
+(CUDA EULA) — see
+[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)'s
+README for why that molecule's `flake.nix` needs `allowUnfree`.
 
 ## Adopting
 
