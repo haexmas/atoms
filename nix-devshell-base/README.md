@@ -59,3 +59,42 @@ commit SHA of this publisher repository:
 Then run `spaex install`. Requires [Nix](https://nixos.org/download) with
 flakes enabled, and [direnv](https://direnv.net/) for automatic shell
 activation (`direnv allow` once after cloning).
+
+## First-time consumer setup
+
+Three preconditions are easy to miss on a fresh machine; the
+`install_hook` only checks the first one.
+
+1. **Flakes must be enabled.** A default Nix install has `nix-command`
+   and `flakes` behind the `experimental-features` flag — without it,
+   `nix develop`/`direnv`'s `use flake` fail with `experimental Nix
+   feature 'nix-command' is disabled`. Enable it per-user, no root
+   needed:
+
+   ```bash
+   mkdir -p ~/.config/nix
+   echo "experimental-features = nix-command flakes" >> ~/.config/nix/nix.conf
+   ```
+
+2. **direnv itself must be installed.** Nix does not bring it in; install
+   it via your distro/package manager (e.g. `sudo pacman -S direnv`,
+   `sudo apt install direnv`, `brew install direnv`, or
+   `nix profile install nixpkgs#direnv`).
+
+3. **direnv must be hooked into your shell.** Add the hook line for your
+   shell to its startup file, then open a new shell:
+
+   ```bash
+   # bash (~/.bashrc) / zsh (~/.zshrc)
+   eval "$(direnv hook bash)"   # or: zsh
+
+   # fish (~/.config/fish/config.fish)
+   direnv hook fish | source
+   ```
+
+With all three in place, `cd` into the consumer repo and run
+`direnv allow` once; direnv builds the devShell (first run can take a
+while) and loads `nix`-provisioned tools (`node`, `pnpm`, `cargo`, ...)
+into `PATH` automatically on every subsequent `cd`. Without direnv,
+`nix develop` (with flakes enabled per step 1) drops into an equivalent
+shell manually.
