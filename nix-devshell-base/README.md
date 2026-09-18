@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.3.0`
+- Version: `0.4.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -42,6 +42,27 @@ The read is guarded (`builtins.pathExists`): no adopted molecule
 declaring `nix_packages` is a valid "no extra packages" state, not an
 error, since this molecule's own lifecycle is independent of any
 particular package contributor's.
+
+### Unfree packages
+
+`flake.nix`'s `import nixpkgs { ... }` sets `config.allowUnfree = true`
+(v0.4.0+). Some package-contributor molecules need a package nixpkgs
+marks unfree — e.g.
+[`com.github.haexmas.atoms.holzi`](../holzi/)'s `cudatoolkit`, gated
+behind the CUDA EULA. Without this, `pkgs.${name}` throws `Refusing to
+evaluate package ... because it has an unfree license` at flake
+evaluation time, before `nix develop`/`direnv` even gets to build
+anything.
+
+This is a blanket allow, not a per-package predicate
+(`config.allowUnfreePredicate`): `cudatoolkit` alone is a meta-package
+bundling several separately unfree-licensed sub-derivations
+(`cuda_nvcc`, `cuda_cuobjdump`, ...), and that set of names is not
+stable across nixpkgs revisions — a predicate listing them would break
+silently on a `nixpkgs` bump. Since this molecule's `flake.nix` is the
+sole place any consumer's `import nixpkgs` happens, this is also the
+only place such an allowance can live; a package-contributor molecule
+has no flake of its own to set it in.
 
 ## Adopting
 

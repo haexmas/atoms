@@ -8,5 +8,6 @@
   "libayatana-appindicator",
   "librsvg",
   "alsa-lib",
-  "pkg-config"
+  "pkg-config",
+  "cudatoolkit"
 ]
