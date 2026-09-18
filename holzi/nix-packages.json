@@ -9,5 +9,6 @@
   "librsvg",
   "alsa-lib",
   "pkg-config",
-  "cudatoolkit"
+  "cudatoolkit",
+  "lld"
 ]

@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.2.0`
+- Version: `0.3.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages` — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
@@ -31,6 +31,18 @@ CUDA-capable dev machine (Etappe-0 finding #3 — `mistralrs/cuda`'s
 (CUDA EULA) — see
 [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)'s
 README for why that molecule's `flake.nix` needs `allowUnfree`.
+
+`lld` (v0.3.0) works around a linker-ordering bug that only shows up once
+`cudatoolkit` is in play: enabling holzi's `llm-cuda` feature (`cudarc`)
+reshapes the crate dependency graph enough to change the order Cargo
+emits native-library link args in, and GNU `ld.bfd` (order-sensitive,
+single-pass symbol resolution) then fails with spurious `undefined
+reference` errors against `libgtk-3`/`libcairo`/`libwebkit2gtk` symbols
+that resolve fine on a plain (non-CUDA) build. `lld` isn't
+order-sensitive the same way and resolves cleanly — see holzi's
+`src-tauri/.cargo/config.toml`, which sets `-fuse-ld=lld` for the Linux
+target. Verified live: `cargo build --features llm-cuda` fails
+reproducibly with `ld.bfd`, succeeds with `-fuse-ld=lld`.
 
 ## Adopting
 
