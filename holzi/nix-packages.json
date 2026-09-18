@@ -1,5 +1,4 @@
 [
-  "webkitgtk_4_1",
   "curl",
   "wget",
   "file",
@@ -9,5 +8,13 @@
   "librsvg",
   "alsa-lib",
   "pkg-config",
-  "cudatoolkit"
+  "cudatoolkit",
+  "lld",
+  "gtk3",
+  "cairo",
+  "glib.out",
+  "gdk-pixbuf",
+  "dbus.lib",
+  "libsoup_3",
+  "gcc.cc.lib"
 ]
