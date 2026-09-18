@@ -4,11 +4,14 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.2.0`
+- Version: `0.3.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
   removed again by `spaex remove`.
+- `install_hook` (warn-only): checks `nix` is on `PATH` after install and
+  prints an actionable hint if not. Never installs Nix itself — that
+  needs interactive root access spaex should not attempt unattended.
 
 **Does not deliver `.gitignore`.** An exclusive atom is rewritten
 verbatim on *every* `spaex install`, not just the first — for `flake.nix`
