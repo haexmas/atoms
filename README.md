@@ -112,7 +112,9 @@ deliberately small and can be adopted independently:
 
 All three are behavior molecules delivered through `atoms.behavior`. They are
 baseline guidance: a consuming project's explicit conventions and supported
-runtime versions remain authoritative.
+runtime versions remain authoritative. The `rust` and `javascript-typescript`
+molecules additionally contribute a package fragment under
+`atoms.nix_packages` (see "Nix devShells" below) — `python` does not yet.
 
 ### `general-coding`
 
@@ -123,6 +125,22 @@ dependency direction, abstractions, tests, and reviewable change size.
 - Atom id: `com.github.haexmas.atoms.general-coding`
 - Kind: behavior fragment (`atoms.behavior`)
 - Path: [`general-coding/`](general-coding/)
+
+### Nix devShells
+
+[`com.github.haexmas.atoms.nix-devshell-base`](nix-devshell-base/) delivers
+a reproducible `nix develop`/`direnv` devShell skeleton (`flake.nix`,
+`.envrc`, `.gitignore`) to a consumer's repo root via spaex Spec 027's
+exclusive `atoms.dev_environment` category. It ships no packages itself;
+adopt it alongside language molecules that contribute a package fragment
+via the composable `atoms.nix_packages` category (`rust`,
+`javascript-typescript`) and, for holzi specifically,
+[`com.github.haexmas.atoms.holzi`](holzi/) for its Tauri-app-specific
+system libraries.
+
+- Atom id: `com.github.haexmas.atoms.nix-devshell-base`
+- Kind: exclusive generic atom (`atoms.dev_environment`)
+- Path: [`nix-devshell-base/`](nix-devshell-base/)
 
 ## License
 

@@ -3,12 +3,21 @@
 Behavior atom for JavaScript and TypeScript projects.
 
 - Atom id: `com.github.haexmas.atoms.javascript-typescript`
-- Version: `0.1.0`
-- Delivered atoms: `javascript-typescript.md` and `testing.md` under `atoms.behavior`
+- Version: `0.2.0`
+- Delivered atoms: `javascript-typescript.md` and `testing.md` under
+  `atoms.behavior`; a `nodejs_22`/`pnpm` package fragment under
+  `atoms.nix_packages`.
 
 The atoms give coding agents a compact baseline for type safety, trust-boundary
 validation, asynchronous code, module design, and JavaScript/TypeScript test
 strategy. Runtime- and repository-specific conventions take precedence.
+
+The `nix_packages` fragment contributes Node.js and pnpm to a consumer's
+composed Nix devShell (spaex Spec 027) — adopt
+[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
+alongside this molecule for it to take effect. Pinned to Node 22 (nixpkgs'
+current LTS attribute); a project needing a different major should add its
+own override rather than expect this fragment to track it.
 
 ## Adopting
 

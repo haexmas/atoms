@@ -3,14 +3,23 @@
 Behavior atom for Rust projects.
 
 - Atom id: `com.github.haexmas.atoms.rust`
-- Version: `0.2.0`
-- Delivered atoms: `rust.md` and `testing.md` under `atoms.behavior`
+- Version: `0.3.0`
+- Delivered atoms: `rust.md` and `testing.md` under `atoms.behavior`; a
+  `rustc`/`cargo`/`clippy`/`rustfmt` package fragment under
+  `atoms.nix_packages`.
 
 The atoms give coding agents a compact baseline for ownership, types, error
 handling, async code, unsafe code, and Rust's unit, integration, and
 documentation testing workflow.
 Project-specific conventions and tool commands take precedence where they are
 more specific.
+
+The `nix_packages` fragment contributes the standard Rust toolchain to a
+consumer's composed Nix devShell (spaex Spec 027) — adopt
+[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
+alongside this molecule for it to take effect. A project needing a specific
+toolchain version beyond what nixpkgs currently pins should add its own
+override rather than expect this fragment to track it.
 
 ## Adopting
 
