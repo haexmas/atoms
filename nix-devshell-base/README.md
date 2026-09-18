@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.4.0`
+- Version: `0.5.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -42,6 +42,38 @@ The read is guarded (`builtins.pathExists`): no adopted molecule
 declaring `nix_packages` is a valid "no extra packages" state, not an
 error, since this molecule's own lifecycle is independent of any
 particular package contributor's.
+
+### Dotted package names (v0.5.0+)
+
+A `nix_packages` entry is normally a plain top-level attribute name
+(`"gtk3"` → `pkgs.gtk3`). It can also be a dotted path (`"gcc.cc.lib"`,
+`"dbus.lib"`), resolved via `lib.getAttrFromPath` instead of `pkgs.${name}`.
+This exists because some nixpkgs packages split their shared library out
+of the *default* output: plain `glib` resolves to its `bin` output (not
+the one with `libglib-2.0.so`), and `dbus`'s default output has no
+`lib/` at all — the library is in `dbus.lib`. There's no flat top-level
+alias for `libstdc++`/`libgcc_s` either; it's `gcc.cc.lib`. A consumer
+needing one of these writes `"glib.out"`/`"dbus.lib"`/`"gcc.cc.lib"` in
+its own `nix_packages` fragment instead of the plain name.
+
+### Runtime library resolution (v0.5.0+)
+
+`devShells.default` sets `LD_LIBRARY_PATH` to
+`lib.makeLibraryPath packages` via a `shellHook` — every resolved
+package's `lib/` directory, generically, driven entirely by whatever
+`nix_packages` molecules contribute (no per-package or per-consumer
+special-casing). This exists because Nix's own dynamic linker does
+**not** consult the host's `/etc/ld.so.cache`: a package landing in
+`packages` makes it resolvable at *build* time (via `pkg-config`/`-L`
+flags) but not necessarily at *runtime*, and RPATH isn't a reliable
+alternative here either — at least for
+[`com.github.haexmas.atoms.holzi`](../holzi/)'s Tauri binary, Tauri's own
+build process overwrites whatever RPATH the Nix cc-wrapper would have
+auto-added with its own bundle-relative convention. Without this, a
+GUI binary linking something like `webkitgtk_4_1` compiles fine and then
+fails at first run with "shared object not found" — caught live: this
+molecule's `flake.nix` had shipped since v0.3.0 without ever actually
+being used to run a GUI app through it.
 
 ### Unfree packages
 

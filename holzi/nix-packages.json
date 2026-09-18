@@ -10,5 +10,12 @@
   "alsa-lib",
   "pkg-config",
   "cudatoolkit",
-  "lld"
+  "lld",
+  "gtk3",
+  "cairo",
+  "glib.out",
+  "gdk-pixbuf",
+  "dbus.lib",
+  "libsoup_3",
+  "gcc.cc.lib"
 ]
