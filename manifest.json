@@ -22,17 +22,17 @@
       "path": "ponytail",
       "version": "4.9.2"
     },
-    "com.github.haexmas.atoms.rust": {
-      "path": "rust",
-      "version": "0.3.0"
+    "com.github.haexmas.atoms.coding-guideline-rust": {
+      "path": "coding-guideline-rust",
+      "version": "0.5.0"
     },
-    "com.github.haexmas.atoms.javascript-typescript": {
-      "path": "javascript-typescript",
+    "com.github.haexmas.atoms.coding-guideline-javascript-typescript": {
+      "path": "coding-guideline-javascript-typescript",
+      "version": "0.4.0"
+    },
+    "com.github.haexmas.atoms.coding-guideline-python": {
+      "path": "coding-guideline-python",
       "version": "0.2.0"
-    },
-    "com.github.haexmas.atoms.python": {
-      "path": "python",
-      "version": "0.1.0"
     },
     "com.github.haexmas.atoms.general-coding": {
       "path": "general-coding",
@@ -44,6 +44,14 @@
     },
     "com.github.haexmas.atoms.holzi": {
       "path": "holzi",
+      "version": "0.1.0"
+    },
+    "com.github.haexmas.atoms.nix-rust": {
+      "path": "nix-rust",
+      "version": "0.1.0"
+    },
+    "com.github.haexmas.atoms.nix-nodejs": {
+      "path": "nix-nodejs",
       "version": "0.1.0"
     }
   }

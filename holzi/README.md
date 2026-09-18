@@ -3,9 +3,9 @@
 A `nix_packages`-only molecule contributing the system libraries
 [holzi](https://github.com/haexmas/holzi)'s Tauri v2 app needs to build on
 Linux, beyond what the generic
-[`com.github.haexmas.atoms.rust`](../rust/) and
-[`com.github.haexmas.atoms.javascript-typescript`](../javascript-typescript/)
-molecules already provide.
+[`com.github.haexmas.atoms.nix-rust`](../nix-rust/) and
+[`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/) molecules already
+provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
 - Version: `0.1.0`

@@ -32,12 +32,11 @@ first install; v0.1.0 shipped this bug.) Add `.direnv/` to your own
 `.spaex/generated/nix-packages.json` — the file spaex regenerates from
 every currently-adopted molecule's `atoms.nix_packages` fragment (the
 *composable* generic atom category) — and passes the resulting package
-list to `pkgs.mkShell`. Adopt this molecule alongside whichever
-language/tool molecules a repo needs (e.g.
-[`com.github.haexmas.atoms.rust`](../rust/),
-[`com.github.haexmas.atoms.javascript-typescript`](../javascript-typescript/)):
-each contributes its own package names, and this molecule's `flake.nix`
-never needs to change when contributors are added or removed.
+list to `pkgs.mkShell`. Adopt this molecule alongside whichever package
+molecules a repo needs (e.g. [`com.github.haexmas.atoms.nix-rust`](../nix-rust/),
+[`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/)): each contributes
+its own package names, and this molecule's `flake.nix` never needs to
+change when contributors are added or removed.
 
 The read is guarded (`builtins.pathExists`): no adopted molecule
 declaring `nix_packages` is a valid "no extra packages" state, not an

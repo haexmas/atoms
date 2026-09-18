@@ -2,11 +2,9 @@
 
 Behavior atom for Rust projects.
 
-- Atom id: `com.github.haexmas.atoms.rust`
-- Version: `0.3.0`
-- Delivered atoms: `rust.md` and `testing.md` under `atoms.behavior`; a
-  `rustc`/`cargo`/`clippy`/`rustfmt` package fragment under
-  `atoms.nix_packages`.
+- Atom id: `com.github.haexmas.atoms.coding-guideline-rust`
+- Version: `0.5.0`
+- Delivered atoms: `rust.md` and `testing.md` under `atoms.behavior`
 
 The atoms give coding agents a compact baseline for ownership, types, error
 handling, async code, unsafe code, and Rust's unit, integration, and
@@ -14,12 +12,15 @@ documentation testing workflow.
 Project-specific conventions and tool commands take precedence where they are
 more specific.
 
-The `nix_packages` fragment contributes the standard Rust toolchain to a
-consumer's composed Nix devShell (spaex Spec 027) — adopt
-[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
-alongside this molecule for it to take effect. A project needing a specific
-toolchain version beyond what nixpkgs currently pins should add its own
-override rather than expect this fragment to track it.
+This molecule is behavior-only — it does not provision the Rust toolchain
+itself. For a Nix devShell with `rustc`/`cargo`/`clippy`/`rustfmt`, adopt
+[`com.github.haexmas.atoms.nix-rust`](../nix-rust/) alongside
+[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/). Kept
+separate deliberately: adopting Rust coding guidance and adopting a Rust
+Nix devShell are independent decisions (v0.3.0 briefly coupled them via a
+`nix_packages` fragment on this molecule — reverted). Prefixed
+`coding-guideline-` (renamed from plain `rust` in v0.5.0) so its scope is
+unambiguous alongside `nix-rust`.
 
 ## Adopting
 
@@ -30,7 +31,7 @@ this publisher repository:
 {
   "source": "https://github.com/haexmas/atoms",
   "revision": "<full-40-char-sha>",
-  "molecules": ["com.github.haexmas.atoms.rust"]
+  "molecules": ["com.github.haexmas.atoms.coding-guideline-rust"]
 }
 ```
 

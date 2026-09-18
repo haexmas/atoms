@@ -1,0 +1,11 @@
+{
+  "spaex_version": "4",
+  "id": "com.github.haexmas.atoms.nix-rust",
+  "version": "0.1.0",
+  "priority": 20,
+  "atoms": {
+    "nix_packages": [
+      "nix-packages.json"
+    ]
+  }
+}

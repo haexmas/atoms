@@ -101,20 +101,21 @@ adoption details.
 The publisher also contains language-specific behavior molecules. Each one is
 deliberately small and can be adopted independently:
 
-- `com.github.haexmas.atoms.rust` — ownership, types, error handling, async
-  code, unsafe code, and Cargo verification; includes Rust testing guidance.
-- `com.github.haexmas.atoms.javascript-typescript` — strict typing, trust
-  boundaries, async control flow, module design, and verification; includes
-  JavaScript/TypeScript testing guidance.
-- `com.github.haexmas.atoms.python` — typing, explicit data models, validation,
-  exceptions, resource management, async code, and verification; includes
-  Python testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-rust` — ownership, types, error
+  handling, async code, unsafe code, and Cargo verification; includes Rust
+  testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-javascript-typescript` — strict
+  typing, trust boundaries, async control flow, module design, and
+  verification; includes JavaScript/TypeScript testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-python` — typing, explicit data
+  models, validation, exceptions, resource management, async code, and
+  verification; includes Python testing guidance.
 
-All three are behavior molecules delivered through `atoms.behavior`. They are
-baseline guidance: a consuming project's explicit conventions and supported
-runtime versions remain authoritative. The `rust` and `javascript-typescript`
-molecules additionally contribute a package fragment under
-`atoms.nix_packages` (see "Nix devShells" below) — `python` does not yet.
+All three are behavior molecules delivered through `atoms.behavior` only.
+They are baseline guidance: a consuming project's explicit conventions and
+supported runtime versions remain authoritative. None of them provision a
+toolchain — see "Nix devShells" below for the separate, dedicated
+`nix-rust`/`nix-nodejs` package molecules.
 
 ### `general-coding`
 
@@ -131,12 +132,20 @@ dependency direction, abstractions, tests, and reviewable change size.
 [`com.github.haexmas.atoms.nix-devshell-base`](nix-devshell-base/) delivers
 a reproducible `nix develop`/`direnv` devShell skeleton (`flake.nix`,
 `.envrc`) to a consumer's repo root via spaex Spec 027's exclusive
-`atoms.dev_environment` category. It ships no packages itself;
-adopt it alongside language molecules that contribute a package fragment
-via the composable `atoms.nix_packages` category (`rust`,
-`javascript-typescript`) and, for holzi specifically,
-[`com.github.haexmas.atoms.holzi`](holzi/) for its Tauri-app-specific
-system libraries.
+`atoms.dev_environment` category. It ships no packages itself; adopt it
+alongside whichever dedicated package molecules a project needs, each
+contributing a fragment via the composable `atoms.nix_packages` category:
+
+- [`com.github.haexmas.atoms.nix-rust`](nix-rust/) — `rustc`, `cargo`,
+  `clippy`, `rustfmt`.
+- [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`, `pnpm`.
+- [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
+  Linux system libraries.
+
+These are deliberately separate from the `coding-guideline-rust`/
+`coding-guideline-javascript-typescript` behavior molecules above: adopting
+coding guidance and adopting a Nix
+devShell package are independent decisions.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
 - Kind: exclusive generic atom (`atoms.dev_environment`)

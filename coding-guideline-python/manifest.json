@@ -1,7 +1,7 @@
 {
   "spaex_version": "4",
-  "id": "com.github.haexmas.atoms.python",
-  "version": "0.1.0",
+  "id": "com.github.haexmas.atoms.coding-guideline-python",
+  "version": "0.2.0",
   "priority": 20,
   "atoms": {
     "behavior": [

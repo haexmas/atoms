@@ -2,22 +2,24 @@
 
 Behavior atom for JavaScript and TypeScript projects.
 
-- Atom id: `com.github.haexmas.atoms.javascript-typescript`
-- Version: `0.2.0`
+- Atom id: `com.github.haexmas.atoms.coding-guideline-javascript-typescript`
+- Version: `0.4.0`
 - Delivered atoms: `javascript-typescript.md` and `testing.md` under
-  `atoms.behavior`; a `nodejs_22`/`pnpm` package fragment under
-  `atoms.nix_packages`.
+  `atoms.behavior`
 
 The atoms give coding agents a compact baseline for type safety, trust-boundary
 validation, asynchronous code, module design, and JavaScript/TypeScript test
 strategy. Runtime- and repository-specific conventions take precedence.
 
-The `nix_packages` fragment contributes Node.js and pnpm to a consumer's
-composed Nix devShell (spaex Spec 027) — adopt
-[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
-alongside this molecule for it to take effect. Pinned to Node 22 (nixpkgs'
-current LTS attribute); a project needing a different major should add its
-own override rather than expect this fragment to track it.
+This molecule is behavior-only — it does not provision a JS runtime itself.
+For a Nix devShell with Node.js and pnpm, adopt
+[`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/) alongside
+[`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/). Kept
+separate deliberately: adopting JS/TS coding guidance and adopting a
+Node/pnpm Nix devShell are independent decisions (v0.2.0 briefly coupled
+them via a `nix_packages` fragment on this molecule — reverted). Prefixed
+`coding-guideline-` (renamed from plain `javascript-typescript` in
+v0.4.0) so its scope is unambiguous alongside `nix-nodejs`.
 
 ## Adopting
 
@@ -28,7 +30,7 @@ this publisher repository:
 {
   "source": "https://github.com/haexmas/atoms",
   "revision": "<full-40-char-sha>",
-  "molecules": ["com.github.haexmas.atoms.javascript-typescript"]
+  "molecules": ["com.github.haexmas.atoms.coding-guideline-javascript-typescript"]
 }
 ```
 

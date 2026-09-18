@@ -1,15 +1,12 @@
 {
   "spaex_version": "4",
-  "id": "com.github.haexmas.atoms.javascript-typescript",
-  "version": "0.2.0",
+  "id": "com.github.haexmas.atoms.coding-guideline-javascript-typescript",
+  "version": "0.4.0",
   "priority": 20,
   "atoms": {
     "behavior": [
       "javascript-typescript.md",
       "testing.md"
-    ],
-    "nix_packages": [
-      "nix-packages.json"
     ]
   }
 }
