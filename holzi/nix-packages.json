@@ -1,0 +1,12 @@
+[
+  "webkitgtk_4_1",
+  "curl",
+  "wget",
+  "file",
+  "xdotool",
+  "openssl",
+  "libayatana-appindicator",
+  "librsvg",
+  "alsa-lib",
+  "pkg-config"
+]
