@@ -101,14 +101,15 @@ adoption details.
 The publisher also contains language-specific behavior molecules. Each one is
 deliberately small and can be adopted independently:
 
-- `com.github.haexmas.atoms.rust` — ownership, types, error handling, async
-  code, unsafe code, and Cargo verification; includes Rust testing guidance.
-- `com.github.haexmas.atoms.javascript-typescript` — strict typing, trust
-  boundaries, async control flow, module design, and verification; includes
-  JavaScript/TypeScript testing guidance.
-- `com.github.haexmas.atoms.python` — typing, explicit data models, validation,
-  exceptions, resource management, async code, and verification; includes
-  Python testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-rust` — ownership, types, error
+  handling, async code, unsafe code, and Cargo verification; includes Rust
+  testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-javascript-typescript` — strict
+  typing, trust boundaries, async control flow, module design, and
+  verification; includes JavaScript/TypeScript testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-python` — typing, explicit data
+  models, validation, exceptions, resource management, async code, and
+  verification; includes Python testing guidance.
 
 All three are behavior molecules delivered through `atoms.behavior` only.
 They are baseline guidance: a consuming project's explicit conventions and
@@ -141,8 +142,9 @@ contributing a fragment via the composable `atoms.nix_packages` category:
 - [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
   Linux system libraries.
 
-These are deliberately separate from the `rust`/`javascript-typescript`
-behavior molecules above: adopting coding guidance and adopting a Nix
+These are deliberately separate from the `coding-guideline-rust`/
+`coding-guideline-javascript-typescript` behavior molecules above: adopting
+coding guidance and adopting a Nix
 devShell package are independent decisions.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`

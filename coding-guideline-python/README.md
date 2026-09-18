@@ -2,13 +2,16 @@
 
 Behavior atom for Python projects.
 
-- Atom id: `com.github.haexmas.atoms.python`
-- Version: `0.1.0`
+- Atom id: `com.github.haexmas.atoms.coding-guideline-python`
+- Version: `0.2.0`
 - Delivered atoms: `python.md` and `testing.md` under `atoms.behavior`
 
 The atoms give coding agents a compact baseline for typing, explicit data
 models, validation, exception handling, resource management, async code, and
 Python testing. Project-specific conventions take precedence.
+
+Prefixed `coding-guideline-` (renamed from plain `python` in v0.2.0) to
+match `coding-guideline-rust`/`coding-guideline-javascript-typescript`.
 
 ## Adopting
 
@@ -19,7 +22,7 @@ this publisher repository:
 {
   "source": "https://github.com/haexmas/atoms",
   "revision": "<full-40-char-sha>",
-  "molecules": ["com.github.haexmas.atoms.python"]
+  "molecules": ["com.github.haexmas.atoms.coding-guideline-python"]
 }
 ```
 

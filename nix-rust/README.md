@@ -12,7 +12,7 @@ devShell.
   for that).
 
 Deliberately separate from
-[`com.github.haexmas.atoms.rust`](../rust/) (behavior/coding-guidance
+[`com.github.haexmas.atoms.coding-guideline-rust`](../coding-guideline-rust/) (behavior/coding-guidance
 only): adopting Rust coding guidance and adopting a Rust Nix devShell are
 independent decisions, and bundling them would force every adopter of one
 to also take the other. A project needing a specific toolchain version

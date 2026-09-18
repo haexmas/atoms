@@ -11,7 +11,7 @@ consumer's composed Nix devShell.
   for that).
 
 Deliberately separate from
-[`com.github.haexmas.atoms.javascript-typescript`](../javascript-typescript/)
+[`com.github.haexmas.atoms.coding-guideline-javascript-typescript`](../coding-guideline-javascript-typescript/)
 (behavior/coding-guidance only): adopting JS/TS coding guidance and
 adopting a Node/pnpm Nix devShell are independent decisions, and bundling
 them would force every adopter of one to also take the other. Pinned to
