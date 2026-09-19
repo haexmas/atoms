@@ -5,7 +5,7 @@ This walks through adopting the atom on a repo that already uses spaex's v4 mani
 ## 1. Prerequisite: the `graphify` CLI
 
 ```console
-$ pip install graphifyy
+$ uv tool install graphifyy
 $ graphify --help
 ```
 

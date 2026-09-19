@@ -26,7 +26,7 @@ Installs this atom's git hooks (`post-commit`, `post-checkout`) into the current
 ## Preconditions (checked in this order)
 
 1. **Current branch is tracked.** The repo's auto-detected default branch, or one named in `.haex-hive.json`'s `tracked_branches[]`. Otherwise: refuse, name the current branch and the expected tracked branch(es) (FR-013).
-2. **`graphify` CLI is on PATH.** Otherwise: prompt `graphify CLI not found. Install now via 'pip install graphifyy'? [Y/n]`. Default `Y` runs `sys.executable -m pip install graphifyy` using the invoking Python interpreter and re-checks PATH; on `n`, a pip failure, or a failed PATH re-check, refuse with actionable instructions, make no other changes (FR-011). The operator can then install `graphifyy` manually and re-run this installer.
+2. **`graphify` CLI is on PATH.** Otherwise: prompt `graphify CLI not found. Install now via 'uv tool install graphifyy'? [Y/n]`. Default `Y` runs `uv tool install graphifyy` and re-checks PATH; on `n`, a missing `uv`, an install failure, or a failed PATH re-check, refuse with actionable instructions, make no other changes (FR-011). The operator can then install `graphifyy` manually and re-run this installer.
 3. **Neither target hook path is already occupied** by a hook from another tool. Otherwise: refuse, instruct the operator to integrate manually; do not overwrite (FR-014).
 
 ## Interactive step
@@ -40,6 +40,6 @@ If all preconditions pass, the installer checks the unversioned local-git-config
 
 ## Non-goals (v0.1)
 
-- No `--force` flag to overwrite an existing hook — that would undercut FR-014's collision-refusal safety boundary. (FR-011's pip-install prompt and FR-012's explicit local-registration check replace the earlier v0 heuristic dispatch; no flag is needed to bypass them.)
+- No `--force` flag to overwrite an existing hook — that would undercut FR-014's collision-refusal safety boundary. (FR-011's uv-tool-install prompt and FR-012's explicit local-registration check replace the earlier v0 heuristic dispatch; no flag is needed to bypass them.)
 - No `--platform` passthrough to `graphify install` — the operator can run `graphify install --platform P` manually if graphify's own auto-detection picks the wrong harness.
 - No uninstall counterpart in this atom — removing the hooks is a manual `rm .git/hooks/post-commit .git/hooks/post-checkout`; `graphify uninstall` handles graphify's own side independently.

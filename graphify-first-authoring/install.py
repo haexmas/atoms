@@ -92,31 +92,34 @@ def _prompt(question: str, default_yes: bool = True) -> bool:
 
 
 def _ensure_graphify_on_path() -> None:
-    """FR-011: if ``graphify`` is absent, offer to ``pip install graphifyy``."""
+    """FR-011: if ``graphify`` is absent, offer to ``uv tool install graphifyy``."""
     if shutil.which("graphify"):
         return
+    uv = shutil.which("uv")
+    if uv is None:
+        raise InstallError(
+            "graphify CLI is required and 'uv' is not on PATH to install it — "
+            "install 'uv' (or 'graphifyy' manually) and re-run."
+        )
     proceed = _prompt(
-        "graphify CLI not found. Install now via 'pip install graphifyy'?",
+        "graphify CLI not found. Install now via 'uv tool install graphifyy'?",
         default_yes=True,
     )
     if not proceed:
         raise InstallError(
-            "graphify CLI is required — install it with 'pip install graphifyy' "
+            "graphify CLI is required — install it with 'uv tool install graphifyy' "
             "and re-run."
         )
     try:
-        subprocess.run(
-            [sys.executable, "-m", "pip", "install", "graphifyy"],
-            check=True,
-        )
+        subprocess.run([uv, "tool", "install", "graphifyy"], check=True)
     except subprocess.CalledProcessError as exc:
         raise InstallError(
-            f"'pip install graphifyy' failed (exit {exc.returncode}) — install "
+            f"'uv tool install graphifyy' failed (exit {exc.returncode}) — install "
             "the graphify CLI manually and re-run."
         ) from exc
     if not shutil.which("graphify"):
         raise InstallError(
-            "'pip install graphifyy' completed but 'graphify' is still not on "
+            "'uv tool install graphifyy' completed but 'graphify' is still not on "
             "PATH — check your PATH and re-run."
         )
 

@@ -200,7 +200,7 @@ just trigger it automatically, the agent triggers it defensively.
 
 ## graphify as a dependency
 
-graphify is a separate tool (`pip install graphifyy`, CLI binary `graphify`
+graphify is a separate tool (`uv tool install graphifyy`, CLI binary `graphify`
 on PATH) with its own built-in multi-platform installer:
 `graphify install [--platform P]` places its skill/config content into any of
 ~18 supported agent harnesses. haex-hive does not need to reimplement that.
@@ -215,14 +215,14 @@ Rather than growing the schema for one molecule's need, this is solved ad-hoc in
 ```python
 if shutil.which("graphify") is None:
     answer = input(
-        "graphify CLI not found. Install now via 'pip install graphifyy'? [Y/n] "
+        "graphify CLI not found. Install now via 'uv tool install graphifyy'? [Y/n] "
     )
     if answer.strip().lower() == "n":
         raise SystemExit(
-            "graphify CLI is required — install it with 'pip install graphifyy' "
+            "graphify CLI is required — install it with 'uv tool install graphifyy' "
             "and re-run this installer."
         )
-    subprocess.run([sys.executable, "-m", "pip", "install", "graphifyy"], check=True)
+    subprocess.run([shutil.which("uv"), "tool", "install", "graphifyy"], check=True)
 
 registration = subprocess.run(
     ["git", "-C", str(repo_root), "config", "--local", "--get",
