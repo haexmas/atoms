@@ -61,7 +61,7 @@ the completed output reflects.
 
 | Check | Outcome on failure |
 |---|---|
-| `graphify` on PATH | If absent, prompt to install via `sys.executable -m pip install graphifyy` (default Y); on decline, refuse with instructions, no other changes (FR-011) |
+| `graphify` on PATH | If absent, prompt to install via `uv tool install graphifyy` (default Y); on decline, a missing `uv`, or install failure, refuse with instructions, no other changes (FR-011) |
 | Current branch is tracked | Refuse, name current branch + expected tracked branch(es) (FR-013) |
 | Target hook path already occupied | Refuse, instruct manual integration, no overwrite (FR-014) |
 | Local registration marker | If `graphify-first-authoring.registration=installed` is absent from local git config, prompt before running `graphify install` (default Y); on success, write the marker; on decline, continue with manual follow-up instructions. `graphify-out/` presence is not a registration signal (FR-012) |

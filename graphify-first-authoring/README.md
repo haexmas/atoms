@@ -56,7 +56,7 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 
 - It does **not** rewrite existing duplicates already committed to the codebase (scope is new authoring).
 - It does **not** replace human review — borderline calls escalate to the operator.
-- It does **not** silently install anything into your Python environment (the installer prompts before `sys.executable -m pip install graphifyy`). It also prompts before `graphify install` when the local registration marker is absent, records successful registration in local git config, and skips that step only when the marker is present. `graphify-out/` presence alone is not a registration signal.
+- It does **not** silently install anything into your environment (the installer prompts before `uv tool install graphifyy`). It also prompts before `graphify install` when the local registration marker is absent, records successful registration in local git config, and skips that step only when the marker is present. `graphify-out/` presence alone is not a registration signal.
 - If graph bootstrap or refresh fails, the agent warns and continues; the failed refresh is flagged for a later manual check.
 - It does **not** cause git operations to fail — both hooks always exit 0 regardless of whether their work succeeded.
 - Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. Set `GRAPHIFY_PARENT_WORKTREE` when creating a worktree from another linked worktree.

@@ -38,7 +38,7 @@ def test_manifest_declares_expected_identity() -> None:
         "script": "install.py",
         "on_failure": "warn",
     }
-    assert manifest["version"] == "1.4.0"
+    assert manifest["version"] == "1.5.0"
     publisher = _load_json(_PUBLISHER_MANIFEST)
     assert (
         publisher["molecules"][manifest["id"]]["version"]
