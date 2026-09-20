@@ -188,6 +188,9 @@ exists from another tool (`pre-commit` framework, husky-style setups, etc.),
 logic into their existing hook manager instead of overwriting it. This is a
 working default for v0.1, to be specified more precisely later if it becomes
 a real friction point.
+A hook that `install.py` itself wrote earlier is not a collision: it is
+recognized by the signature line after its shebang and refreshed in place, so
+re-running the installer is idempotent.
 
 ## Agent-side freshness backstop
 

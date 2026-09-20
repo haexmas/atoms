@@ -138,6 +138,106 @@ def test_refuses_when_hook_already_exists(
     assert provisioned == [], "hook collisions must be checked before provisioning"
 
 
+def _adopter_with_graphify(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
+    """Tracked repo with a ``graphify`` stub on PATH, as the cwd of the installer."""
+    repo = _make_tracked_repo(tmp_path)
+    bin_dir = tmp_path / "bin"
+    _put_graphify_stub(bin_dir)
+    _prepend_path(monkeypatch, bin_dir)
+    monkeypatch.chdir(repo)
+    return repo
+
+
+def test_reinstall_refreshes_hooks_written_by_an_earlier_run(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A re-run must recognize its own hooks instead of refusing them as foreign."""
+    repo = _adopter_with_graphify(tmp_path, monkeypatch)
+    hooks_dir = repo / ".git" / "hooks"
+
+    assert installer.install() == 0
+    fresh = {name: (hooks_dir / name).read_text() for name in installer._HOOK_NAMES}
+    for name, text in fresh.items():
+        # Simulate an install from another interpreter or an older atom version.
+        body = text.split("\n", 1)[1]
+        (hooks_dir / name).write_text(f"#!/stale/interpreter/python3\n{body}")
+
+    assert installer.install() == 0
+
+    for name, expected in fresh.items():
+        assert (hooks_dir / name).read_text() == expected, name
+    assert (repo / ".gitignore").read_text().splitlines().count("graphify-out/") == 1
+
+
+@pytest.mark.parametrize(
+    "foreign",
+    [
+        b"#!/bin/sh\nexec pre-commit hook\n",
+        b"\xff\xfe\x00\x01 compiled hook",
+        # The signature only counts as the second line, right behind the shebang.
+        f'#!/bin/sh\n# wrapper\n"""post-commit {installer._MANAGED_HOOK_SIGNATURE}\n'.encode(),
+    ],
+    ids=["shell-hook", "binary-hook", "signature-on-wrong-line"],
+)
+def test_refuses_foreign_hook_that_only_resembles_ours(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    foreign: bytes,
+) -> None:
+    repo = _adopter_with_graphify(tmp_path, monkeypatch)
+    existing = repo / ".git" / "hooks" / "post-commit"
+    existing.write_bytes(foreign)
+
+    assert installer.install() != 0
+    assert "already exists" in capsys.readouterr().err
+    assert existing.read_bytes() == foreign
+
+
+def test_refuses_without_partial_changes_when_only_one_hook_is_ours(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    repo = _adopter_with_graphify(tmp_path, monkeypatch)
+    hooks_dir = repo / ".git" / "hooks"
+    assert installer.install() == 0
+    body = (hooks_dir / "post-commit").read_text().split("\n", 1)[1]
+    ours = f"#!/stale/interpreter/python3\n{body}"
+    (hooks_dir / "post-commit").write_text(ours)
+    (hooks_dir / "post-checkout").write_text("# from some other tool\n")
+    gitignore_before = (repo / ".gitignore").read_text()
+
+    assert installer.install() != 0
+    assert "post-checkout" in capsys.readouterr().err
+    assert (hooks_dir / "post-commit").read_text() == ours, "our hook must stay untouched"
+    assert (hooks_dir / "post-checkout").read_text() == "# from some other tool\n"
+    assert (repo / ".gitignore").read_text() == gitignore_before
+
+
+@pytest.mark.skipif(os.name == "nt", reason="symlinks need elevated rights on Windows")
+def test_refuses_symlinked_hook_even_if_it_carries_our_signature(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    """Writing through a symlink would modify whatever it points at."""
+    repo = _adopter_with_graphify(tmp_path, monkeypatch)
+    hooks_dir = repo / ".git" / "hooks"
+    assert installer.install() == 0
+    shared = tmp_path / "shared-post-commit"
+    shared.write_text((hooks_dir / "post-commit").read_text())
+    (hooks_dir / "post-commit").unlink()
+    (hooks_dir / "post-commit").symlink_to(shared)
+    before = shared.read_text()
+
+    assert installer.install() != 0
+    assert "already exists" in capsys.readouterr().err
+    assert (hooks_dir / "post-commit").is_symlink()
+    assert shared.read_text() == before
+
+
 def test_refuses_when_effective_hooks_path_is_a_file(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
