@@ -27,7 +27,7 @@ Installs this atom's git hooks (`post-commit`, `post-checkout`) into the current
 
 1. **Current branch is tracked.** The repo's auto-detected default branch, or one named in `.haex-hive.json`'s `tracked_branches[]`. Otherwise: refuse, name the current branch and the expected tracked branch(es) (FR-013).
 2. **`graphify` CLI is on PATH.** Otherwise: prompt `graphify CLI not found. Install now via 'uv tool install graphifyy'? [Y/n]`. Default `Y` runs `uv tool install graphifyy` and re-checks PATH; on `n`, a missing `uv`, an install failure, or a failed PATH re-check, refuse with actionable instructions, make no other changes (FR-011). The operator can then install `graphifyy` manually and re-run this installer.
-3. **Neither target hook path is already occupied** by a hook from another tool. Otherwise: refuse, instruct the operator to integrate manually; do not overwrite (FR-014).
+3. **Neither target hook path is already occupied** by a hook from another tool. Otherwise: refuse, instruct the operator to integrate manually; do not overwrite (FR-014). A hook this installer wrote on an earlier run is not a collision: it is recognized by the signature line that follows its shebang and refreshed in place, so re-running the installer is idempotent. A symlink is always treated as another tool's hook, because writing through it would modify its target.
 
 ## Interactive step
 

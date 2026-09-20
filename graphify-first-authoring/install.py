@@ -2,7 +2,9 @@
 
 Contract: see specs/atoms/graphify-first-authoring/contracts/install.cli.md.
 
-Refuses cleanly (no partial changes) if any precondition fails. On success:
+Refuses cleanly (no partial changes) if any precondition fails. Re-running is
+idempotent: hooks this installer wrote earlier are refreshed in place, and only a
+hook that came from another tool is refused. On success:
 - writes Git's effective hooks directory's ``post-commit`` and ``post-checkout``
   files with a shebang resolved to whichever of ``python3``/``python`` is present;
 - copies the sibling helper modules into Git's effective hooks directory so the entrypoints'
@@ -33,6 +35,9 @@ _HELPER_MODULES = ("_tracked_branches.py", "_refresh.py", "_snapshot.py")
 _GITIGNORE_LINE = "graphify-out/"
 _REGISTRATION_CONFIG_KEY = "graphify-first-authoring.registration"
 _REGISTRATION_CONFIG_VALUE = "installed"
+# Tail of the entrypoint docstring's opening line. ``_write_hook`` prepends only a
+# shebang, so this line is the second line of every hook this installer wrote.
+_MANAGED_HOOK_SIGNATURE = "hook entrypoint (shebang written by install.py at install time)."
 
 
 class InstallError(Exception):
@@ -124,11 +129,32 @@ def _ensure_graphify_on_path() -> None:
         )
 
 
+def _is_managed_hook(path: Path, name: str) -> bool:
+    """Return whether ``path`` is a hook an earlier run of this installer wrote.
+
+    The signature line survives atom upgrades and interpreter changes, so a
+    re-run recognizes its own hooks instead of mistaking them for another
+    tool's. A symlink is never ours: writing through it would modify whatever
+    it points at.
+    """
+    if path.is_symlink() or not path.is_file():
+        return False
+    try:
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return False
+    return len(lines) > 1 and lines[1].strip() == f'"""{name} {_MANAGED_HOOK_SIGNATURE}'
+
+
 def _check_hook_collisions(hooks_dir: Path) -> None:
-    """Refuse to overwrite either Git hook managed by another tool."""
+    """Refuse to overwrite either Git hook managed by another tool.
+
+    Hooks this installer wrote earlier are refreshed in place, not refused, so
+    re-running the installer stays idempotent (FR-014).
+    """
     for name in _HOOK_NAMES:
         target = hooks_dir / name
-        if target.exists():
+        if target.exists() and not _is_managed_hook(target, name):
             raise InstallError(
                 f"Hook '{target}' already exists from another tool. Integrate "
                 "manually rather than overwriting."
