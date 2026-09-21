@@ -16,5 +16,6 @@
   "gdk-pixbuf",
   "dbus.lib",
   "libsoup_3",
-  "gcc.cc.lib"
+  "gcc.cc.lib",
+  "xvfb-run"
 ]

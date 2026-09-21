@@ -8,8 +8,10 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.5.0`
-- Delivered atoms: a package fragment under `atoms.nix_packages` — no
+- Version: `0.6.0`
+- Delivered atoms: a package fragment under `atoms.nix_packages` and
+  `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
+  "End-to-end test tooling" below) — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
@@ -101,6 +103,32 @@ every build now needs this. Never on CI (ubuntu-24.04 via `apt-get`/
 rustup, no Nix involved), where it would break things: wrong FHS
 `/lib64` path, and CI's own `libwebkit2gtk-4.1-dev` apt package is
 already fully host-native with no clash to begin with.
+
+### End-to-end test tooling (v0.6.0)
+
+Driving the real holzi binary from a test needs three tools:
+
+- `xvfb-run` (a plain `nix_packages` name) gives the app a virtual display,
+  so a test run never opens a window on the developer's desktop.
+- `tauri-driver`, Tauri's WebDriver bridge, is not in nixpkgs.
+  `.devshell/packages.nix` builds it from its crates.io release
+  (`rustPlatform.buildRustPackage` with `fetchCrate`); a version bump
+  changes `version` and both hashes together.
+- `WebKitWebDriver`, the driver that speaks WebKit's automation protocol to
+  the app. Arch's `webkit2gtk-4.1` does not ship it (Debian's
+  `webkit2gtk-driver` does), so it comes from nixpkgs. It is exposed through
+  a tiny derivation (`webkit-webdriver`) that links only the binary: adding
+  `webkitgtk_4_1` itself would put its `lib/` on `LD_LIBRARY_PATH` and its
+  `.pc` files on `PKG_CONFIG_PATH` and displace the host WebKit the app links
+  against, the very thing v0.5.0 removed.
+
+**The driver must be the same WebKit version as the host's.** nixpkgs and a
+rolling distro drift apart, and a mismatched driver can fail in ways that
+look like app bugs. The derivation writes its version to
+`share/webkit-webdriver/version` next to `bin/`, so a runner can compare it
+with `pkg-config --modversion webkit2gtk-4.1` and stop with a clear message.
+Verified 2026-09-21 on CachyOS: host webkit2gtk-4.1 2.52.6 and nixpkgs
+`webkitgtk_4_1` 2.52.6 drive a debug build of holzi under Xvfb.
 
 ### `scripts/with-nix-host-bridge.sh` (holzi repo, not this molecule)
 
