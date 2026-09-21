@@ -140,7 +140,8 @@ contributing a fragment via the composable `atoms.nix_packages` category:
   `clippy`, `rustfmt`.
 - [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`, `pnpm`.
 - [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
-  Linux system libraries.
+  Linux system libraries and end-to-end test tooling (`tauri-driver`, the
+  WebKit driver, `xvfb-run`).
 
 These are deliberately separate from the `coding-guideline-rust`/
 `coding-guideline-javascript-typescript` behavior molecules above: adopting

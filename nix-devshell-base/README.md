@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.6.0`
+- Version: `0.7.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -94,6 +94,25 @@ package itself: comparing derivations would force `pkgs.cudatoolkit` to
 evaluate for every consumer, and it does not evaluate on platforms
 nixpkgs does not support it on (e.g. Darwin). A consumer that does not
 contribute `cudatoolkit` never touches it and gets no `CUDA_ROOT`.
+
+### Packages nixpkgs does not provide (v0.7.0+)
+
+A name in `nix_packages` can only be something nixpkgs already has. For a
+tool it lacks, or one that must not enter the shell as a whole package,
+`flake.nix` reads one more optional file, `.devshell/packages.nix`: a
+function from `pkgs` to a list of derivations, appended to the packages
+above (so its `lib/` directories join `LD_LIBRARY_PATH` like any other).
+The read is guarded like the generated list, so a repo whose molecules do
+not deliver the file is unaffected.
+
+A molecule delivers it as an exclusive atom under any category key of its
+own choosing (spaex only accepts a repo-root file or a path under a
+dot-directory, which is why the file lives in `.devshell/`). Two
+consequences: only one adopted molecule can own that path, so this is an
+extension point for a single contributor and not a composable category,
+and the file has to be tracked by git, because a flake only sees tracked
+files. [`com.github.haexmas.atoms.holzi`](../holzi/) is the first user
+(`tauri-driver` and the WebKit driver for end-to-end tests).
 
 ### Unfree packages
 

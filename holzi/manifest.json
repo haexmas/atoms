@@ -1,11 +1,14 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.holzi",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "priority": 20,
   "atoms": {
     "nix_packages": [
       "nix-packages.json"
+    ],
+    "devshell_packages": [
+      ".devshell/packages.nix"
     ]
   }
 }
