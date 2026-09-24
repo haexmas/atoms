@@ -4,7 +4,7 @@
   "molecules": {
     "com.github.haexmas.atoms.speckit": {
       "path": "speckit",
-      "version": "1.1.0"
+      "version": "1.2.0"
     },
     "com.github.haexmas.atoms.graphify-first-authoring": {
       "path": "graphify-first-authoring",
