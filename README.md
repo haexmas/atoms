@@ -138,7 +138,8 @@ contributing a fragment via the composable `atoms.nix_packages` category:
 
 - [`com.github.haexmas.atoms.nix-rust`](nix-rust/) — `rustc`, `cargo`,
   `clippy`, `rustfmt`.
-- [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`, `pnpm`.
+- [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`,
+  `corepack_22`, `pnpm`.
 - [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
   Linux system libraries and end-to-end test tooling (`tauri-driver`, the
   WebKit driver, `xvfb-run`).
