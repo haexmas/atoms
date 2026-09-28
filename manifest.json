@@ -52,7 +52,7 @@
     },
     "com.github.haexmas.atoms.nix-nodejs": {
       "path": "nix-nodejs",
-      "version": "0.1.0"
+      "version": "0.2.0"
     }
   }
 }
