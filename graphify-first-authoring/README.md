@@ -59,7 +59,7 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 - It does **not** silently install anything into your environment (the installer prompts before `uv tool install graphifyy`). It also prompts before `graphify install` when the local registration marker is absent, records successful registration in local git config, and skips that step only when the marker is present. `graphify-out/` presence alone is not a registration signal.
 - If graph bootstrap or refresh fails, the agent warns and continues; the failed refresh is flagged for a later manual check.
 - It does **not** cause git operations to fail — both hooks always exit 0 regardless of whether their work succeeded.
-- Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. Set `GRAPHIFY_PARENT_WORKTREE` when creating a worktree from another linked worktree.
+- Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. When creating from another feature worktree, a complete exact-HEAD snapshot is used first; otherwise the tracked ancestor is selected. Set `GRAPHIFY_PARENT_WORKTREE` to explicitly select a registered source worktree when needed.
 
 ## Suspending for one session
 

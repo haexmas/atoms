@@ -140,6 +140,40 @@ def test_worktree_add_from_linked_worktree_uses_that_parent(
     )["indexed_at_sha"] == "linked-parent"
 
 
+def test_worktree_add_from_feature_worktree_uses_tracked_ancestor(
+    parent_repo_with_hook: Path,
+    tmp_path: Path,
+) -> None:
+    feature = tmp_path / "feature"
+    _git(
+        parent_repo_with_hook,
+        "worktree",
+        "add",
+        "-q",
+        "-b",
+        "feature/x",
+        str(feature),
+    )
+    (feature / "feature.txt").write_text("feature\n")
+    _git(feature, "add", "feature.txt")
+    _git(feature, "commit", "-q", "-m", "feature")
+
+    child = tmp_path / "child-from-feature"
+    _git(
+        feature,
+        "worktree",
+        "add",
+        "-q",
+        "-b",
+        "feature/from-feature",
+        str(child),
+    )
+
+    assert json.loads(
+        (child / "graphify-out" / ".meta.json").read_text()
+    )["indexed_at_sha"] == _git(parent_repo_with_hook, "rev-parse", "HEAD")
+
+
 def test_hook_exits_zero_when_snapshot_would_fail(
     tmp_path: Path,
 ) -> None:
