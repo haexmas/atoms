@@ -3,56 +3,43 @@
   "publisher": "com.github.haexmas.atoms",
   "molecules": {
     "com.github.haexmas.atoms.speckit": {
-      "path": "speckit",
-      "version": "1.1.0"
+      "path": "speckit"
     },
     "com.github.haexmas.atoms.graphify-first-authoring": {
-      "path": "graphify-first-authoring",
-      "version": "1.5.0"
+      "path": "graphify-first-authoring"
     },
     "com.github.haexmas.atoms.ast-grep": {
-      "path": "ast-grep",
-      "version": "0.1.0"
+      "path": "ast-grep"
     },
     "com.github.haexmas.atoms.spaex-constitution": {
-      "path": "spaex-constitution",
-      "version": "2.0.0"
+      "path": "spaex-constitution"
     },
     "com.github.haexmas.atoms.ponytail": {
-      "path": "ponytail",
-      "version": "4.9.2"
+      "path": "ponytail"
     },
     "com.github.haexmas.atoms.coding-guideline-rust": {
-      "path": "coding-guideline-rust",
-      "version": "0.5.0"
+      "path": "coding-guideline-rust"
     },
     "com.github.haexmas.atoms.coding-guideline-javascript-typescript": {
-      "path": "coding-guideline-javascript-typescript",
-      "version": "0.4.0"
+      "path": "coding-guideline-javascript-typescript"
     },
     "com.github.haexmas.atoms.coding-guideline-python": {
-      "path": "coding-guideline-python",
-      "version": "0.2.0"
+      "path": "coding-guideline-python"
     },
     "com.github.haexmas.atoms.general-coding": {
-      "path": "general-coding",
-      "version": "0.4.0"
+      "path": "general-coding"
     },
     "com.github.haexmas.atoms.nix-devshell-base": {
-      "path": "nix-devshell-base",
-      "version": "0.5.0"
+      "path": "nix-devshell-base"
     },
     "com.github.haexmas.atoms.holzi": {
-      "path": "holzi",
-      "version": "0.5.0"
+      "path": "holzi"
     },
     "com.github.haexmas.atoms.nix-rust": {
-      "path": "nix-rust",
-      "version": "0.1.0"
+      "path": "nix-rust"
     },
     "com.github.haexmas.atoms.nix-nodejs": {
-      "path": "nix-nodejs",
-      "version": "0.1.0"
+      "path": "nix-nodejs"
     }
   }
 }

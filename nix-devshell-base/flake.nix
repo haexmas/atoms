@@ -37,7 +37,20 @@
         # one containing libglib-2.0.so; `dbus`'s library lives in `.lib`,
         # not its default "out").
         resolvePackage = name: pkgs.lib.getAttrFromPath (pkgs.lib.splitString "." name) pkgs;
-        packages = map resolvePackage packageNames;
+        # Packages nixpkgs does not ship, or ships in a form that would clash with the
+        # host, come from an optional file another molecule delivers:
+        # `.devshell/packages.nix`, a function from `pkgs` to a list of
+        # derivations. Read with the same guard as the list above, so no adopted
+        # molecule delivering it is a valid state. The file must be tracked by git
+        # like every other file a flake reads, and only one molecule can own that
+        # path (an exclusive atom), so this is an extension point for one
+        # contributor, not a composable category.
+        extraPackagesPath = ./.devshell/packages.nix;
+        extraPackages =
+          if builtins.pathExists extraPackagesPath
+          then import extraPackagesPath pkgs
+          else [ ];
+        packages = map resolvePackage packageNames ++ extraPackages;
       in
       {
         devShells.default = pkgs.mkShell {
@@ -48,9 +61,22 @@
           # alone isn't reliable here since Tauri's own build process
           # overwrites it with a bundle-relative convention. Generic by
           # construction: driven entirely by whatever nix_packages molecules
-          # contribute, no per-package or per-consumer special-casing.
+          # contribute, no per-package or per-consumer special-casing — with
+          # the one exception below, which is itself gated on a contributed
+          # package name.
           shellHook = ''
             export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath packages}:$LD_LIBRARY_PATH"
+          '' + pkgs.lib.optionalString (builtins.elem "cudatoolkit" packageNames) ''
+            # `cudarc` (pulled in by `mistralrs/cuda`) looks for one of
+            # CUDA_HOME/CUDA_PATH/CUDA_ROOT/CUDA_TOOLKIT_ROOT_DIR at build time to
+            # find -lcudart/-lnvrtc/-lcurand/-lcublas/-lcublasLt — unlike
+            # LD_LIBRARY_PATH above, this is consulted by the *linker*, not the
+            # dynamic loader, and without it cudarc falls back to host paths like
+            # /usr/local/cuda that don't exist in this Nix-provided toolchain.
+            # Gated on the contributed *name*, not on `pkgs.cudatoolkit` itself:
+            # comparing derivations would evaluate cudatoolkit for every consumer,
+            # and it does not evaluate on platforms nixpkgs does not support it on.
+            export CUDA_ROOT="${pkgs.cudatoolkit}"
           '';
         };
       });

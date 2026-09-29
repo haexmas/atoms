@@ -38,12 +38,11 @@ def test_manifest_declares_expected_identity() -> None:
         "script": "install.py",
         "on_failure": "warn",
     }
-    assert manifest["version"] == "1.5.0"
+    assert manifest["version"] == "1.5.1"
     publisher = _load_json(_PUBLISHER_MANIFEST)
-    assert (
-        publisher["molecules"][manifest["id"]]["version"]
-        == manifest["version"]
-    )
+    publisher_entry = publisher["molecules"][manifest["id"]]
+    assert publisher_entry["path"] == "graphify-first-authoring"
+    assert "version" not in publisher_entry
 
 
 def test_contributed_constitution_file_exists() -> None:

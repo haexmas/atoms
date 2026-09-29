@@ -5,8 +5,8 @@ agent integrations it supports. It deliberately does not copy Spec Kit skill
 files into the molecule: the official CLI owns each agent's file layout and
 integration semantics.
 
-The molecule is version `1.1.0` and pins `specify-cli==1.0.6`. The declaration
-covers the integration keys reported by `specify-cli 1.0.6`, including Claude
+The molecule is version `1.2.0` and pins `specify-cli==1.0.11`. The declaration
+covers the integration keys reported by `specify-cli 1.0.11`, including Claude
 Code, Codex CLI, Gemini CLI, and the other supported agent/IDE integrations.
 
 ## Adoption
