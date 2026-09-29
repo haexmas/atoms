@@ -137,12 +137,14 @@ read correctly regardless of which harness executes it.
   the graph is missing).
 - **Worktree/feature-branch creation** fires `post-checkout`, which copies
   (not symlinks — Windows-portable, and semantically correct as a fork-point
-  view) the tracked source worktree's `graphify-out/` in. The hook matches the
-  new checkout HEAD against registered tracked worktrees, so normal
-  `git worktree add` needs no extra environment variable. `GRAPHIFY_PARENT_WORKTREE`
-  remains available for worktrees created from another linked worktree. Feature
-  branches and their snapshots are discarded together; nothing survives the
-  branch.
+  view) the tracked source worktree's `graphify-out/` in. The hook first
+  matches the new checkout HEAD against registered tracked worktrees, then
+  accepts a complete exact-HEAD feature snapshot, and finally falls back to a
+  tracked ancestor. Normal `git worktree add` therefore needs no extra
+  environment variable even when created from another feature worktree.
+  `GRAPHIFY_PARENT_WORKTREE` remains available for explicit source selection.
+  Feature branches and their snapshots are discarded together; nothing
+  survives the branch.
 - **Merging a feature branch back into a tracked branch** needs no special
   graph-merge logic — the merge commit lands *on* the tracked branch and
   fires the same `post-commit` hook as any other commit.

@@ -22,10 +22,12 @@ No `[NEEDS CLARIFICATION]` markers remain in the Technical Context — the prece
 
 **Decision**: `post-checkout` copies `graphify-out/` from the tracked source
 worktree whose HEAD equals the new checkout HEAD into a newly created worktree.
-An explicit `GRAPHIFY_PARENT_WORKTREE` override selects a registered source for
-feature-from-feature worktrees. Git does not expose the source worktree path,
-but it does provide the new HEAD; matching that against registered tracked
-worktrees identifies the normal `main`/`develop` source deterministically.
+For feature-from-feature worktrees, a complete exact-HEAD snapshot is accepted
+first; when it is absent, the hook falls back to a tracked source whose HEAD is
+an ancestor. An explicit `GRAPHIFY_PARENT_WORKTREE` override remains available
+for source selection. Git does not expose the source worktree path, but it does
+provide the new HEAD; matching that against registered worktrees and then
+checking ancestry handles both normal and nested `git worktree add` calls.
 
 **Rationale**: A symlink was considered and rejected — not because of a genuine Windows blocker (symlinks work fine within this constitution's declared OS scope: Linux/macOS/WSL2), but because a snapshot is *semantically correct*: the feature branch is meant to see the pre-branch fork-point state, not a live view of the tracked branch's ongoing changes. A snapshot also degrades gracefully — it is simply discarded with the branch, no cleanup logic needed, and it works even if the constitution's OS scope is ever widened to native Windows without WSL.
 

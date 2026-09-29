@@ -85,6 +85,29 @@ def test_copies_from_tracked_parent_without_explicit_signal(
     assert (child / "graphify-out" / "graph.json").is_file()
 
 
+def test_copies_from_tracked_ancestor_when_created_from_feature_worktree(
+    parent_with_graph: tuple[Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    parent, feature = parent_with_graph
+    feature_file = feature / "feature.txt"
+    feature_file.write_text("feature\n")
+    _git(feature, "add", "feature.txt")
+    _git(feature, "commit", "-q", "-m", "feature")
+    feature_head = _git(feature, "rev-parse", "HEAD")
+
+    child = tmp_path / "child-from-feature"
+    _git(feature, "worktree", "add", "-q", "-b", "feature/child", str(child))
+    monkeypatch.delenv(_snapshot._PARENT_WORKTREE_ENV, raising=False)
+
+    assert _snapshot.snapshot(child, feature_head) is True
+    assert (child / "graphify-out" / "graph.json").is_file()
+    assert json.loads(
+        (child / "graphify-out" / ".meta.json").read_text()
+    )["indexed_at_sha"] == _git(parent, "rev-parse", "HEAD")
+
+
 def test_noop_when_already_present(parent_with_graph: tuple[Path, Path]) -> None:
     _, child = parent_with_graph
     existing = child / "graphify-out"

@@ -69,14 +69,44 @@ def _branch_name(ref: str | None) -> str | None:
     return ref[len(prefix):]
 
 
+def _is_ancestor(current: Path, ancestor: str, descendant: str) -> bool:
+    """Return whether ``ancestor`` is reachable from ``descendant``."""
+    try:
+        proc = subprocess.run(
+            [
+                "git",
+                "-C",
+                str(current),
+                "merge-base",
+                "--is-ancestor",
+                ancestor,
+                descendant,
+            ],
+            capture_output=True,
+            check=False,
+        )
+    except OSError:
+        return False
+    return proc.returncode == 0
+
+
+def _has_complete_graph(worktree: Path) -> bool:
+    """Return whether a worktree has a usable graphify snapshot."""
+    return (worktree / "graphify-out" / "graph.json").is_file()
+
+
 def _parent_worktree(current: Path, new_head: str | None = None) -> Path | None:
     """Return the source worktree selected for this checkout.
 
     An explicit ``GRAPHIFY_PARENT_WORKTREE`` is authoritative and is validated
     against Git's registered worktrees. Otherwise, select the tracked-branch
-    worktree whose HEAD equals the new checkout HEAD. Git supplies that HEAD to
-    ``post-checkout`` for ``git worktree add``; matching it avoids guessing from
-    worktree-list order and keeps ``main``/``develop`` snapshots distinct.
+    worktree whose HEAD equals the new checkout HEAD. A complete snapshot from
+    any exact-HEAD source is accepted for feature-from-feature worktrees. If
+    that source has no complete snapshot, fall back to a tracked-branch
+    worktree whose HEAD is an ancestor of the new checkout HEAD. Git supplies
+    that HEAD to ``post-checkout`` for ``git worktree add``; the tracked exact
+    match keeps ``main``/``develop`` snapshots distinct, while the other two
+    paths avoid requiring an environment variable.
     """
     records = _registered_worktrees(current)
     current_resolved = current.resolve()
@@ -99,6 +129,25 @@ def _parent_worktree(current: Path, new_head: str | None = None) -> Path | None:
             registered != current_resolved
             and head == new_head
             and branch in tracked
+        ):
+            return registered
+
+    for registered, head, _ in records:
+        if (
+            registered != current_resolved
+            and head == new_head
+            and _has_complete_graph(registered)
+        ):
+            return registered
+
+    for registered, head, branch_ref in records:
+        branch = _branch_name(branch_ref)
+        if (
+            registered != current_resolved
+            and head
+            and branch in tracked
+            and _has_complete_graph(registered)
+            and _is_ancestor(current, head, new_head)
         ):
             return registered
     return None

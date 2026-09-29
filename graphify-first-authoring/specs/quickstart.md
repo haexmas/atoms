@@ -57,8 +57,10 @@ $ ls graphify-out/.meta.json   # should reflect the new HEAD
 ```
 
 When creating a feature worktree from `main` or another tracked branch, the
-hook finds the source automatically by matching the new checkout HEAD. A
-feature-from-feature worktree can still pass the source explicitly:
+hook finds the source automatically by matching the new checkout HEAD. When
+creating from another feature worktree, it uses that worktree's complete
+exact-HEAD snapshot or falls back to the tracked ancestor. A source can still
+be selected explicitly:
 
 ```console
 # Linux / macOS / WSL2
