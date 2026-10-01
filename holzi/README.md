@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.6.0`
+- Version: `0.7.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages` and
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) — no
@@ -129,6 +129,18 @@ look like app bugs. The derivation writes its version to
 with `pkg-config --modversion webkit2gtk-4.1` and stop with a clear message.
 Verified 2026-09-21 on CachyOS: host webkit2gtk-4.1 2.52.6 and nixpkgs
 `webkitgtk_4_1` 2.52.6 drive a debug build of holzi under Xvfb.
+
+### libclang (v0.7.0)
+
+`llvmPackages.libclang.lib`: holzi's `haex-crdt` dependency enables rusqlite's
+`preupdate_hook` so that writes to `WITHOUT ROWID` tables are observed (the
+vault events that keep open views current). That feature builds
+`libsqlite3-sys` with `bindgen`, which loads libclang at build time. CI installs
+`libclang-dev`; here the package comes from the shell's own nixpkgs, and
+[`nix-devshell-base`](../nix-devshell-base/) (v0.8.0+) exports `LIBCLANG_PATH`
+for it. Verified 2026-10-01 on CachyOS: `cargo build` of `libsqlite3-sys` with
+`preupdate_hook` fails with "Unable to find libclang" without it and succeeds
+with it. Needs `nix-devshell-base` 0.8.0 or later in the consumer.
 
 ### `scripts/with-nix-host-bridge.sh` (holzi repo, not this molecule)
 

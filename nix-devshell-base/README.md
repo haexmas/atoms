@@ -95,6 +95,24 @@ evaluate for every consumer, and it does not evaluate on platforms
 nixpkgs does not support it on (e.g. Darwin). A consumer that does not
 contribute `cudatoolkit` never touches it and gets no `CUDA_ROOT`.
 
+### libclang for bindgen (v0.8.0+)
+
+When an adopted molecule contributes `llvmPackages.libclang.lib` (e.g.
+[`com.github.haexmas.atoms.holzi`](../holzi/)), the `shellHook` also exports
+`LIBCLANG_PATH` pointing at its `lib/`. Crates that generate bindings at compile
+time (`bindgen` through `clang-sys`; for example `libsqlite3-sys` once rusqlite's
+`preupdate_hook` is enabled) load libclang while *building*. Without the variable
+`clang-sys` finds the host's `/usr/lib/libclang.so` first, which cannot resolve its
+own `libLLVM` through this shell's dynamic linker, and the build stops with
+"Unable to find libclang". `LD_LIBRARY_PATH` (set for every contributed package)
+is not consulted before that host search, so the variable is needed.
+
+The libclang must come from the same nixpkgs as the rest of the shell. One from
+another nixpkgs pulls in another glibc, and the build script then fails with
+`undefined symbol ... GLIBC_PRIVATE`. The export is gated on the contributed
+package *name*, like `CUDA_ROOT`, so a consumer that does not contribute it never
+evaluates libclang.
+
 ### Packages nixpkgs does not provide (v0.7.0+)
 
 A name in `nix_packages` can only be something nixpkgs already has. For a

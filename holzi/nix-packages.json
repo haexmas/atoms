@@ -17,5 +17,6 @@
   "dbus.lib",
   "libsoup_3",
   "gcc.cc.lib",
-  "xvfb-run"
+  "xvfb-run",
+  "llvmPackages.libclang.lib"
 ]
