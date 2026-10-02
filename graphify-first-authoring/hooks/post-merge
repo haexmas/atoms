@@ -1,10 +1,14 @@
-"""post-commit hook entrypoint (shebang written by install.py at install time).
+"""post-merge hook entrypoint (shebang written by install.py at install time).
 
-Per contracts/git-hooks.md §post-commit:
+Per contracts/git-hooks.md §post-merge:
 1. no-op unless the current branch is in the tracked-branch set;
-2. call ``_refresh.refresh()`` on the repo root;
-3. **always exit 0**, regardless of whether the refresh succeeded — the commit
+2. call ``_refresh.refresh()`` on the repo root — ``git merge`` and ``git pull``
+   (fast-forward included) never run ``post-commit``, so this is what keeps the
+   graph current when pull requests land on a tracked branch;
+3. **always exit 0**, regardless of whether the refresh succeeded — the merge
    has already happened and this hook must never affect its outcome.
+
+Git invokes this hook with ``<squash-flag>``, which is irrelevant here.
 """
 
 from __future__ import annotations
@@ -23,7 +27,7 @@ import _tracked_branches  # noqa: E402
 def main() -> int:
     root = _tracked_branches._repo_root(Path.cwd())
     if root is not None:
-        _refresh.refresh_tracked_branch(root, "post-commit")
+        _refresh.refresh_tracked_branch(root, "post-merge")
     return 0
 
 

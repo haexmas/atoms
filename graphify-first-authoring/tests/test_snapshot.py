@@ -108,6 +108,51 @@ def test_copies_from_tracked_ancestor_when_created_from_feature_worktree(
     )["indexed_at_sha"] == _git(parent, "rev-parse", "HEAD")
 
 
+def test_copies_from_default_branch_when_tracked_head_moved_past_the_fork(
+    parent_with_graph: tuple[Path, Path],
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """``main`` advanced after the feature forked, so it is no ancestor any more."""
+    parent, _ = parent_with_graph
+    forked_at = _git(parent, "rev-parse", "HEAD")
+    (parent / "later.txt").write_text("main moved on\n")
+    _git(parent, "add", "later.txt")
+    _git(parent, "commit", "-q", "-m", "main moved on")
+
+    child = tmp_path / "child-behind-main"
+    _git(parent, "worktree", "add", "-q", "-b", "feature/old", str(child), forked_at)
+    monkeypatch.delenv(_snapshot._PARENT_WORKTREE_ENV, raising=False)
+
+    assert _snapshot.snapshot(child, forked_at) is True
+    assert (child / "graphify-out" / "graph.json").is_file()
+
+
+def test_warns_when_no_tracked_worktree_has_a_graph(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    parent = tmp_path / "parent"
+    parent.mkdir()
+    _git(parent, "init", "-q", "-b", "main")
+    _git(parent, "config", "user.email", "t@t.t")
+    _git(parent, "config", "user.name", "t")
+    _git(parent, "config", "commit.gpgsign", "false")
+    (parent / "README.md").write_text("hi\n")
+    _git(parent, "add", ".")
+    _git(parent, "commit", "-q", "-m", "init")
+    head = _git(parent, "rev-parse", "HEAD")
+    child = tmp_path / "child"
+    _git(parent, "worktree", "add", "-q", "-b", "feature/x", str(child))
+    monkeypatch.delenv(_snapshot._PARENT_WORKTREE_ENV, raising=False)
+
+    assert _snapshot.snapshot(child, head) is False
+    assert "no usable parent worktree was found for this checkout" in (
+        capsys.readouterr().err
+    )
+
+
 def test_noop_when_already_present(parent_with_graph: tuple[Path, Path]) -> None:
     _, child = parent_with_graph
     existing = child / "graphify-out"

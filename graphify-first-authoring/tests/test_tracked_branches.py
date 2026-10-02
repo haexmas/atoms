@@ -91,6 +91,13 @@ def test_malformed_config_treated_as_empty(repo_with_default: Path) -> None:
     assert branches == {"main"}
 
 
+def test_non_object_config_treated_as_empty(repo_with_default: Path) -> None:
+    manifest = repo_with_default / ".spaex" / "manifest.json"
+    manifest.parent.mkdir()
+    manifest.write_text(json.dumps(["main"]))
+    assert tb.tracked_branches(repo_with_default) == {"main"}
+
+
 def test_tracked_branches_field_not_a_list_is_ignored(repo_with_default: Path) -> None:
     manifest = repo_with_default / ".spaex" / "manifest.json"
     manifest.parent.mkdir()

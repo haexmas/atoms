@@ -5,8 +5,9 @@ Contract: see specs/atoms/graphify-first-authoring/contracts/install.cli.md.
 Refuses cleanly (no partial changes) if any precondition fails. Re-running is
 idempotent: hooks this installer wrote earlier are refreshed in place, and only a
 hook that came from another tool is refused. On success:
-- writes Git's effective hooks directory's ``post-commit`` and ``post-checkout``
-  files with a shebang resolved to whichever of ``python3``/``python`` is present;
+- writes Git's effective hooks directory's ``post-commit``, ``post-merge`` and
+  ``post-checkout`` files with a shebang resolved to a Python 3 interpreter
+  outside any virtual environment;
 - copies the sibling helper modules into Git's effective hooks directory so the entrypoints'
   imports resolve regardless of where the atom lives on disk;
 - appends ``graphify-out/`` to ``.gitignore`` if not already present;
@@ -30,11 +31,12 @@ if str(_HOOKS_SRC) not in sys.path:
 
 import _tracked_branches  # noqa: E402
 
-_HOOK_NAMES = ("post-commit", "post-checkout")
+_HOOK_NAMES = ("post-commit", "post-merge", "post-checkout")
 _HELPER_MODULES = ("_tracked_branches.py", "_refresh.py", "_snapshot.py")
 _GITIGNORE_LINE = "graphify-out/"
 _REGISTRATION_CONFIG_KEY = "graphify-first-authoring.registration"
 _REGISTRATION_CONFIG_VALUE = "installed"
+_INTERPRETER_CHECK_TIMEOUT_SECONDS = 5
 # Tail of the entrypoint docstring's opening line. ``_write_hook`` prepends only a
 # shebang, so this line is the second line of every hook this installer wrote.
 _MANAGED_HOOK_SIGNATURE = "hook entrypoint (shebang written by install.py at install time)."
@@ -44,19 +46,51 @@ class InstallError(Exception):
     """Precondition failure. Message is printed to stderr; exit code non-zero."""
 
 
+def _is_virtualenv_dir(directory: Path) -> bool:
+    """Return whether ``directory`` is the ``bin``/``Scripts`` dir of a venv."""
+    return (directory.parent / "pyvenv.cfg").is_file()
+
+
+def _is_python3(interpreter: str) -> bool:
+    """Return whether ``interpreter`` runs Python 3, without invoking a shell."""
+    try:
+        result = subprocess.run(
+            [interpreter, "-c", "import sys; print(sys.version_info[0])"],
+            capture_output=True,
+            text=True,
+            timeout=_INTERPRETER_CHECK_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and result.stdout.strip() == "3"
+
+
 def _resolve_interpreter() -> str:
     """Return an absolute path to a working Python interpreter, or raise.
 
     Per research.md D1 / FR-015: ``python3`` first (modern Linux, macOS,
     WSL2), then ``python`` (native Windows). No polyglot shell wrapper.
+
+    Directories of virtual environments are skipped, and each candidate is
+    verified to run Python 3. The installer is usually
+    launched from a tool's own venv (for example a ``uv tool`` environment or a
+    development checkout's ``.venv``), and a shebang pinned to such an
+    interpreter breaks every hook as soon as that environment is rebuilt or
+    removed. The hooks only need the standard library.
     """
+    search_path = os.pathsep.join(
+        entry
+        for entry in os.environ.get("PATH", os.defpath).split(os.pathsep)
+        if entry and not _is_virtualenv_dir(Path(entry))
+    )
     for candidate in ("python3", "python"):
-        path = shutil.which(candidate)
-        if path:
+        path = shutil.which(candidate, path=search_path)
+        if path and _is_python3(path):
             return path
     raise InstallError(
-        "No 'python3' or 'python' on PATH — install a Python 3 interpreter "
-        "and re-run the installer."
+        "No Python 3 interpreter outside a virtual environment on PATH — "
+        "install a system Python 3 interpreter and re-run the installer."
     )
 
 
@@ -355,8 +389,8 @@ def install() -> int:
     _maybe_run_graphify_install(repo_root)
 
     print(
-        "graphify-first-authoring: installed post-commit and post-checkout "
-        f"hooks in {hooks_dir} (interpreter: {interpreter})."
+        "graphify-first-authoring: installed post-commit, post-merge and "
+        f"post-checkout hooks in {hooks_dir} (interpreter: {interpreter})."
     )
     return 0
 

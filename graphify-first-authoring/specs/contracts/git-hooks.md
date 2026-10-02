@@ -4,7 +4,7 @@
 **Data model**: [data-model.md](../data-model.md) §GraphifyOutDirectory, §FreshnessMarker
 **Design**: [design doc](../../../../docs/plans/2026-08-31-graphify-first-authoring-design.md) §"Graph lifecycle", §"Agent-side freshness backstop"
 
-Both hooks are thin entrypoints installed by `install.py` (see [install.cli.md](install.cli.md)); their behavior is implemented in importable modules (`_refresh.py`, `_snapshot.py`) so it can be unit-tested without invoking git.
+The hooks are thin entrypoints installed by `install.py` (see [install.cli.md](install.cli.md)); their behavior is implemented in importable modules (`_refresh.py`, `_snapshot.py`) so it can be unit-tested without invoking git.
 
 ## `post-commit`
 
@@ -18,6 +18,12 @@ Both hooks are thin entrypoints installed by `install.py` (see [install.cli.md](
 
 **Never**: this hook never causes a `git commit` to fail, roll back, or print an error that a caller would interpret as commit failure.
 
+## `post-merge`
+
+**Invocation**: `<squash-flag>` (git's standard `post-merge` contract; ignored). Fires for `git merge` and `git pull`, fast-forward included — neither runs `post-commit`.
+
+**Behavior**: identical to `post-commit`. If the current branch is not in the tracked-branch set, exit 0; otherwise run `graphify update <repo-root>`, write the freshness marker, warn on failure, and **always exit 0**. This is what keeps the graph current when pull requests land on a tracked branch.
+
 ## `post-checkout`
 
 **Invocation**: `<prev-head-sha> <new-head-sha> <branch-checkout-flag>` (git's standard `post-checkout` contract; the third argument is `1` for a branch checkout, `0` for a file checkout).
@@ -25,12 +31,14 @@ Both hooks are thin entrypoints installed by `install.py` (see [install.cli.md](
 **Behavior**:
 1. If the third argument is not `1`, exit 0 immediately — this hook only cares about branch/worktree checkouts.
 2. If a complete `graphify-out/` containing `graph.json` already exists in the current working directory, exit 0 immediately — never overwrite. An incomplete destination directory is treated as absent and may be replaced after a complete parent graph is found (FR-008 acceptance scenario 2).
-3. If `GRAPHIFY_PARENT_WORKTREE` is set, validate it as a registered source worktree and use it. Otherwise, inspect Git's registered worktrees and first select the worktree whose `HEAD` equals `<new-head-sha>` and whose branch is in the tracked-branch set. If the new worktree was created from another feature worktree, accept any exact-HEAD source that has a complete graph; if that source is incomplete, fall back to a tracked-branch worktree whose `HEAD` is an ancestor of `<new-head-sha>`. This identifies the `main`/`develop` source without relying on worktree-list order or requiring an environment variable for feature-from-feature worktrees. If no source matches, exit 0 — the agent's backstop handles the missing snapshot.
+3. If `GRAPHIFY_PARENT_WORKTREE` is set, validate it as a registered source worktree and use it. Otherwise, inspect Git's registered worktrees and first select the worktree whose `HEAD` equals `<new-head-sha>` and whose branch is in the tracked-branch set. If the new worktree was created from another feature worktree, accept any exact-HEAD source that has a complete graph; if that source is incomplete, fall back to a tracked-branch worktree whose `HEAD` is an ancestor of `<new-head-sha>`. This identifies the `main`/`develop` source without relying on worktree-list order or requiring an environment variable for feature-from-feature worktrees. If that also fails, select any tracked-branch worktree with a complete graph, preferring the default branch (a tracked branch that moved on after the fork is no ancestor any more). If no source exists, warn on stderr and exit 0 — the agent's backstop handles the missing snapshot.
 4. If the selected parent has no complete `graphify-out/` with `graph.json` (fresh repo, failed/incomplete index), exit 0 — nothing to copy; the agent's failed-consultation handling applies on feature branches.
 5. Otherwise, copy the selected parent's `graphify-out/` into the current working directory's `graphify-out/`, recursively, preserving the freshness marker as-is (it reflects the fork-point commit).
+
+6. After the snapshot step, if a tracked branch is checked out and its graph is missing or its `indexed_at_sha` differs from `HEAD`, run the same refresh as `post-commit`. A fresh graph is left alone.
 
 **On failure** (copy fails partway, e.g. disk full): print a warning to stderr; exit 0 regardless — a checkout MUST NOT fail because this hook could not copy a cache directory. A partially-copied or absent/incomplete `graphify-out/` is caught by the agent-side backstop on tracked branches; an incomplete feature snapshot is handled as a failed consultation without refresh.
 
 ## Shared failure principle
 
-Neither hook is permitted to make a git operation (`commit`, `checkout`, `worktree add`) fail on its own account. This mirrors the constitution text's own bootstrap/refresh backstop (FR-010): the hooks are the eager, native convenience; the agent-side check is what actually guarantees the rule holds, independent of whether the hooks ran, ran successfully, or were bypassed entirely (`--no-verify`).
+No hook is permitted to make a git operation (`commit`, `merge`, `pull`, `checkout`, `worktree add`) fail on its own account. This mirrors the constitution text's own bootstrap/refresh backstop (FR-010): the hooks are the eager, native convenience; the agent-side check is what actually guarantees the rule holds, independent of whether the hooks ran, ran successfully, or were bypassed entirely (`--no-verify`).
