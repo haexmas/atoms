@@ -42,7 +42,8 @@ molecule IDs or a second packaging layer.
   constitution.md        # the principle text (below)
   hooks/
     post-commit          # thin entrypoint → _refresh.py
-    post-checkout        # thin entrypoint → _snapshot.py
+    post-merge           # thin entrypoint → _refresh.py (merges and pulls)
+    post-checkout        # thin entrypoint → _snapshot.py, then _refresh.py when stale
     _refresh.py          # freshness check + incremental graphify reindex
     _snapshot.py         # copies graphify-out/ from the tracked source worktree
   install.py             # see "Adoption" below
@@ -139,15 +140,19 @@ read correctly regardless of which harness executes it.
   (not symlinks — Windows-portable, and semantically correct as a fork-point
   view) the tracked source worktree's `graphify-out/` in. The hook first
   matches the new checkout HEAD against registered tracked worktrees, then
-  accepts a complete exact-HEAD feature snapshot, and finally falls back to a
-  tracked ancestor. Normal `git worktree add` therefore needs no extra
+  accepts a complete exact-HEAD feature snapshot, then a tracked ancestor, and
+  finally any tracked worktree with a complete graph (default branch first),
+  because a tracked branch that moved on after the fork is no ancestor any more
+  yet still beats having no graph. Normal `git worktree add` therefore needs no extra
   environment variable even when created from another feature worktree.
   `GRAPHIFY_PARENT_WORKTREE` remains available for explicit source selection.
   Feature branches and their snapshots are discarded together; nothing
   survives the branch.
 - **Merging a feature branch back into a tracked branch** needs no special
-  graph-merge logic — the merge commit lands *on* the tracked branch and
-  fires the same `post-commit` hook as any other commit.
+  graph-merge logic. `git merge` and `git pull` (fast-forward included) do not
+  run `post-commit`, so `post-merge` refreshes the graph the same way. Switching
+  onto a tracked branch fires `post-checkout`, which refreshes a missing or
+  stale graph as well.
 - **Freshness marker**: `graphify` owns the graph outputs; after a successful
   `graphify update <path>`, this atom's `_refresh.py` writes
   `graphify-out/.meta.json` with the current `indexed_at_sha`. The agent

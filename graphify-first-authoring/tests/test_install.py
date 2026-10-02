@@ -71,7 +71,7 @@ def test_successful_install_writes_hooks_and_gitignore(
     assert installer.install() == 0
 
     hooks_dir = repo / "custom-hooks"
-    for name in ("post-commit", "post-checkout"):
+    for name in ("post-commit", "post-merge", "post-checkout"):
         target = hooks_dir / name
         assert target.exists(), name
         assert os.access(target, os.X_OK), f"{name} must be executable"
@@ -311,7 +311,7 @@ def test_refuses_when_graphify_absent_and_prompt_declined(
     monkeypatch.setattr(
         shutil,
         "which",
-        lambda name: "/usr/bin/python3" if name in _PY_NAMES else None,
+        lambda name, path=None: "/usr/bin/python3" if name in _PY_NAMES else None,
     )
     monkeypatch.setattr(installer, "_prompt", lambda *_a, **_k: False)
     monkeypatch.chdir(repo)
@@ -463,3 +463,36 @@ def test_gitignore_created_when_absent(
 
     assert installer.install() == 0
     assert (repo / ".gitignore").read_text().splitlines() == ["graphify-out/"]
+
+
+def _fake_interpreter(directory: Path) -> Path:
+    directory.mkdir(parents=True)
+    interpreter = directory / "python3"
+    interpreter.write_text("#!/bin/sh\nexit 0\n")
+    interpreter.chmod(0o755)
+    return interpreter
+
+
+def test_interpreter_skips_virtualenv_directories(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A shebang pinned to a tool's venv breaks once that venv is rebuilt."""
+    venv_python = _fake_interpreter(tmp_path / "tool-venv" / "bin")
+    (tmp_path / "tool-venv" / "pyvenv.cfg").write_text("home = /usr/bin\n")
+    system_python = _fake_interpreter(tmp_path / "system" / "bin")
+    monkeypatch.setenv(
+        "PATH", os.pathsep.join([str(venv_python.parent), str(system_python.parent)])
+    )
+
+    assert installer._resolve_interpreter() == str(system_python)
+
+
+def test_interpreter_refuses_when_only_a_virtualenv_provides_python(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    venv_python = _fake_interpreter(tmp_path / "tool-venv" / "bin")
+    (tmp_path / "tool-venv" / "pyvenv.cfg").write_text("home = /usr/bin\n")
+    monkeypatch.setenv("PATH", str(venv_python.parent))
+
+    with pytest.raises(installer.InstallError, match="outside a virtual environment"):
+        installer._resolve_interpreter()

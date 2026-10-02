@@ -21,7 +21,7 @@ No flags in v0.1 — every decision point that could plausibly be a flag (skip c
 
 ## Description
 
-Installs this atom's git hooks (`post-commit`, `post-checkout`) into the current repository's `.git/hooks/`, with a shebang resolved to whichever of `python3`/`python` is present on the invoking machine, and ensures `graphify-out/` is listed in `.gitignore`. Refuses cleanly, making no partial changes, if any precondition below is not met. Must be run once per machine per clone (git hooks are never committed).
+Installs this atom's git hooks (`post-commit`, `post-merge`, `post-checkout`) into the current repository's `.git/hooks/`, with a shebang resolved to whichever of `python3`/`python` is present on the invoking machine outside any virtual environment (directories next to a `pyvenv.cfg` are skipped, so a hook never pins a tool's or checkout's venv), and ensures `graphify-out/` is listed in `.gitignore`. Refuses cleanly, making no partial changes, if any precondition below is not met. Must be run once per machine per clone (git hooks are never committed).
 
 ## Preconditions (checked in this order)
 
@@ -35,11 +35,11 @@ If all preconditions pass, the installer checks the unversioned local-git-config
 
 ## Outputs
 
-- **Success**: `.git/hooks/post-commit` and `.git/hooks/post-checkout` exist, executable, with a shebang naming a real interpreter on this machine. `.gitignore` contains a `graphify-out/` line (added if not already present). After successful `graphify install`, local git config contains `graphify-first-authoring.registration=installed`; after a declined registration prompt, the marker remains unset and manual follow-up is printed. Exit 0.
+- **Success**: `.git/hooks/post-commit`, `.git/hooks/post-merge` and `.git/hooks/post-checkout` exist, executable, with a shebang naming a real interpreter on this machine. `.gitignore` contains a `graphify-out/` line (added if not already present). After successful `graphify install`, local git config contains `graphify-first-authoring.registration=installed`; after a declined registration prompt, the marker remains unset and manual follow-up is printed. Exit 0.
 - **Refuse (any precondition failed)**: diagnostic printed to stderr naming the specific failed precondition; no files written or modified. Non-zero exit.
 
 ## Non-goals (v0.1)
 
 - No `--force` flag to overwrite an existing hook — that would undercut FR-014's collision-refusal safety boundary. (FR-011's uv-tool-install prompt and FR-012's explicit local-registration check replace the earlier v0 heuristic dispatch; no flag is needed to bypass them.)
 - No `--platform` passthrough to `graphify install` — the operator can run `graphify install --platform P` manually if graphify's own auto-detection picks the wrong harness.
-- No uninstall counterpart in this atom — removing the hooks is a manual `rm .git/hooks/post-commit .git/hooks/post-checkout`; `graphify uninstall` handles graphify's own side independently.
+- No uninstall counterpart in this atom — removing the hooks is a manual `rm .git/hooks/post-commit .git/hooks/post-merge .git/hooks/post-checkout`; `graphify uninstall` handles graphify's own side independently.

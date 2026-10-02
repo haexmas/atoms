@@ -4,7 +4,7 @@ Opt-in molecule that changes agent authoring behavior: **consult the graphify kn
 
 - **Molecule id**: `com.github.haexmas.atoms.graphify-first-authoring`
 - **Delivers**: `atoms.behavior: ["constitution.md", "context-map.md"]` (composed into the adopting repo's `.spaex/constitution.md` via `spaex install`)
-- **Also ships**: a `post-commit` hook (auto-refresh `graphify-out/` on tracked branches), a `post-checkout` hook (fork-point snapshot into new worktrees), and an installer for both
+- **Also ships**: a `post-commit` and a `post-merge` hook (auto-refresh `graphify-out/` on tracked branches, also when pull requests land via `git pull`), a `post-checkout` hook (fork-point snapshot into new worktrees, refresh when switching onto a stale tracked branch), and an installer for all three
 
 The `context-map` fragment defines a bounded, task-specific context operation
 using the existing `graphify query --budget` interface. It is deliberately
@@ -46,7 +46,8 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 | `constitution.md` | The contributed behavior fragment |
 | `context-map.md` | Token-bounded context-map protocol backed by `graphify query` |
 | `hooks/post-commit` | Refresh entrypoint (shebang set at install time) |
-| `hooks/post-checkout` | Snapshot entrypoint (shebang set at install time) |
+| `hooks/post-merge` | Refresh entrypoint for merges and pulls (shebang set at install time) |
+| `hooks/post-checkout` | Snapshot and stale-graph refresh entrypoint (shebang set at install time) |
 | `hooks/_refresh.py` | Refresh helper — `graphify update <root>`, warn-on-failure |
 | `hooks/_snapshot.py` | Snapshot helper — copy the tracked source branch's `graphify-out/` into a new worktree |
 | `hooks/_tracked_branches.py` | Tracked-branch set: detected default + `.spaex/manifest.json`'s `tracked_branches[]` |
@@ -58,8 +59,8 @@ For a repo that already runs spaex manifest v4 (`.spaex/manifest.json`, `spaex i
 - It does **not** replace human review — borderline calls escalate to the operator.
 - It does **not** silently install anything into your environment (the installer prompts before `uv tool install graphifyy`). It also prompts before `graphify install` when the local registration marker is absent, records successful registration in local git config, and skips that step only when the marker is present. `graphify-out/` presence alone is not a registration signal.
 - If graph bootstrap or refresh fails, the agent warns and continues; the failed refresh is flagged for a later manual check.
-- It does **not** cause git operations to fail — both hooks always exit 0 regardless of whether their work succeeded.
-- Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. When creating from another feature worktree, a complete exact-HEAD snapshot is used first; otherwise the tracked ancestor is selected. Set `GRAPHIFY_PARENT_WORKTREE` to explicitly select a registered source worktree when needed.
+- It does **not** cause git operations to fail — all hooks always exit 0 regardless of whether their work succeeded.
+- Worktree snapshots automatically select the tracked source branch whose HEAD matches the new worktree's checkout HEAD. When creating from another feature worktree, a complete exact-HEAD snapshot is used first; otherwise the tracked ancestor is selected, and failing that any tracked-branch worktree with a complete graph (default branch first) — so a worktree forked before `main` moved on still gets a snapshot. When no source exists the hook warns on stderr. Set `GRAPHIFY_PARENT_WORKTREE` to explicitly select a registered source worktree when needed.
 
 ## Suspending for one session
 
@@ -71,7 +72,7 @@ Git's effective hooks directory is per-machine and never committed. To remove:
 
 ```bash
 hooks_dir="$(git rev-parse --git-path hooks)"
-rm "$hooks_dir"/post-commit "$hooks_dir"/post-checkout
+rm "$hooks_dir"/post-commit "$hooks_dir"/post-merge "$hooks_dir"/post-checkout
 rm "$hooks_dir"/_refresh.py "$hooks_dir"/_snapshot.py "$hooks_dir"/_tracked_branches.py
 ```
 

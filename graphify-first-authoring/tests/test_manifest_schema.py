@@ -38,7 +38,7 @@ def test_manifest_declares_expected_identity() -> None:
         "script": "install.py",
         "on_failure": "warn",
     }
-    assert manifest["version"] == "1.5.1"
+    assert manifest["version"] == "1.6.0"
     publisher = _load_json(_PUBLISHER_MANIFEST)
     publisher_entry = publisher["molecules"][manifest["id"]]
     assert publisher_entry["path"] == "graphify-first-authoring"

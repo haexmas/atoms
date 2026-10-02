@@ -103,10 +103,11 @@ def _parent_worktree(current: Path, new_head: str | None = None) -> Path | None:
     worktree whose HEAD equals the new checkout HEAD. A complete snapshot from
     any exact-HEAD source is accepted for feature-from-feature worktrees. If
     that source has no complete snapshot, fall back to a tracked-branch
-    worktree whose HEAD is an ancestor of the new checkout HEAD. Git supplies
-    that HEAD to ``post-checkout`` for ``git worktree add``; the tracked exact
-    match keeps ``main``/``develop`` snapshots distinct, while the other two
-    paths avoid requiring an environment variable.
+    worktree whose HEAD is an ancestor of the new checkout HEAD, and finally to
+    any tracked-branch worktree with a complete graph (default branch first).
+    Git supplies that HEAD to ``post-checkout`` for ``git worktree add``; the
+    tracked exact match keeps ``main``/``develop`` snapshots distinct, while the
+    other paths avoid requiring an environment variable.
     """
     records = _registered_worktrees(current)
     current_resolved = current.resolve()
@@ -150,6 +151,21 @@ def _parent_worktree(current: Path, new_head: str | None = None) -> Path | None:
             and _is_ancestor(current, head, new_head)
         ):
             return registered
+
+    # A tracked branch that moved on after this checkout forked is no ancestor
+    # of it any more, yet its graph is still a far better fork-point snapshot
+    # than none. Prefer the repository's default branch among the candidates.
+    default = _tracked_branches._default_branch(current)
+    candidates = [
+        (branch != default, registered)
+        for registered, head, branch_ref in records
+        if (branch := _branch_name(branch_ref)) in tracked
+        and registered != current_resolved
+        and head
+        and _has_complete_graph(registered)
+    ]
+    if candidates:
+        return min(candidates, key=lambda candidate: candidate[0])[1]
     return None
 
 
@@ -157,10 +173,9 @@ def snapshot(current_worktree: Path, new_head: str | None = None) -> bool:
     """Copy the selected parent graph into ``current_worktree``.
 
     Returns ``True`` if a copy was performed, ``False`` on any no-op or
-    failure. A ``False`` return is silent when the situation is a legitimate
-    no-op (destination exists, no parent, parent has no complete graph) and
-    warns to stderr only on genuine failure (a partial copy that had to be
-    rolled back). An incomplete destination directory is removed only after a
+    failure. A ``False`` return is silent when the destination already has a
+    complete graph, and warns to stderr when no source graph is available or a
+    partial copy had to be rolled back. An incomplete destination directory is removed only after a
     complete parent graph has been found. Never raises.
     """
     dest = current_worktree / "graphify-out"
@@ -171,6 +186,13 @@ def snapshot(current_worktree: Path, new_head: str | None = None) -> bool:
 
     parent = _parent_worktree(current_worktree, new_head)
     if parent is None:
+        print(
+            "graphify-first-authoring post-checkout: no tracked-branch worktree "
+            "has a complete graphify-out/ to snapshot — graph stays absent "
+            "(run `graphify update` on a tracked branch, or set "
+            f"{_PARENT_WORKTREE_ENV})",
+            file=sys.stderr,
+        )
         return False
 
     source = parent / "graphify-out"
