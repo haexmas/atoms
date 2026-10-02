@@ -148,7 +148,7 @@ def test_warns_when_no_tracked_worktree_has_a_graph(
     monkeypatch.delenv(_snapshot._PARENT_WORKTREE_ENV, raising=False)
 
     assert _snapshot.snapshot(child, head) is False
-    assert "no tracked-branch worktree has a complete graphify-out/" in (
+    assert "no usable parent worktree was found for this checkout" in (
         capsys.readouterr().err
     )
 

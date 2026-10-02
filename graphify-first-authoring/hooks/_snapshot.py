@@ -187,8 +187,8 @@ def snapshot(current_worktree: Path, new_head: str | None = None) -> bool:
     parent = _parent_worktree(current_worktree, new_head)
     if parent is None:
         print(
-            "graphify-first-authoring post-checkout: no tracked-branch worktree "
-            "has a complete graphify-out/ to snapshot — graph stays absent "
+            "graphify-first-authoring post-checkout: no usable parent worktree "
+            "was found for this checkout — graph stays absent "
             "(run `graphify update` on a tracked branch, or set "
             f"{_PARENT_WORKTREE_ENV})",
             file=sys.stderr,

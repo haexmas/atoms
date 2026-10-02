@@ -163,9 +163,17 @@ def refresh_tracked_branch(
     for a feature branch, a detached HEAD, a fresh graph when ``only_if_stale``
     is set, or a failed refresh. Never raises.
     """
-    branch = _tracked_branches.current_branch(repo_root)
-    if branch is None or not _tracked_branches.is_tracked(branch, repo_root):
+    try:
+        branch = _tracked_branches.current_branch(repo_root)
+        if branch is None or not _tracked_branches.is_tracked(branch, repo_root):
+            return False
+        if only_if_stale and is_fresh(repo_root):
+            return False
+        return refresh(repo_root, hook)
+    except Exception as exc:
+        print(
+            f"graphify-first-authoring {hook}: tracked-branch refresh failed "
+            f"({exc}) — leaving graph stale",
+            file=sys.stderr,
+        )
         return False
-    if only_if_stale and is_fresh(repo_root):
-        return False
-    return refresh(repo_root, hook)

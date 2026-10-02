@@ -167,3 +167,19 @@ def test_non_object_freshness_marker_is_stale(
     )
 
     assert _refresh.is_fresh(tmp_path) is False
+
+
+def test_tracked_branch_refresh_warns_instead_of_raising(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    def raise_unexpected(_repo: Path) -> None:
+        raise RuntimeError("unexpected branch lookup failure")
+
+    monkeypatch.setattr(
+        _refresh._tracked_branches, "current_branch", raise_unexpected
+    )
+
+    assert _refresh.refresh_tracked_branch(tmp_path, "post-checkout") is False
+    assert "tracked-branch refresh failed" in capsys.readouterr().err

@@ -21,7 +21,7 @@ No flags in v0.1 — every decision point that could plausibly be a flag (skip c
 
 ## Description
 
-Installs this atom's git hooks (`post-commit`, `post-merge`, `post-checkout`) into the current repository's `.git/hooks/`, with a shebang resolved to whichever of `python3`/`python` is present on the invoking machine outside any virtual environment (directories next to a `pyvenv.cfg` are skipped, so a hook never pins a tool's or checkout's venv), and ensures `graphify-out/` is listed in `.gitignore`. Refuses cleanly, making no partial changes, if any precondition below is not met. Must be run once per machine per clone (git hooks are never committed).
+Installs this atom's git hooks (`post-commit`, `post-merge`, `post-checkout`) into the current repository's `.git/hooks/`, with a shebang resolved to a verified Python 3 interpreter outside any virtual environment (directories next to a `pyvenv.cfg` are skipped, so a hook never pins a tool's or checkout's venv), and ensures `graphify-out/` is listed in `.gitignore`. Refuses cleanly, making no partial changes, if any precondition below is not met. Must be run once per machine per clone (git hooks are never committed).
 
 ## Preconditions (checked in this order)
 

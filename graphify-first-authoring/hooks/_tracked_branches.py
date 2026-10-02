@@ -70,6 +70,8 @@ def _configured_branches(repo_root: Path) -> list[str]:
         data = json.loads(config.read_text(encoding="utf-8"))
     except (json.JSONDecodeError, OSError):
         return []
+    if not isinstance(data, dict):
+        return []
     entries = data.get("tracked_branches")
     if not isinstance(entries, list):
         return []

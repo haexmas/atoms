@@ -183,9 +183,15 @@ locally-installed artifact — `install.py` resolves this once, per machine, at
 install time:
 
 ```python
-interpreter = shutil.which("python3") or shutil.which("python")
-if interpreter is None:
-    raise SystemExit("graphify-first-authoring: no python or python3 found on PATH")
+for candidate in ("python3", "python"):
+    interpreter = shutil.which(candidate, path=search_path)
+    if interpreter and _is_python3(interpreter):
+        break
+else:
+    raise SystemExit(
+        "graphify-first-authoring: no Python 3 interpreter outside a virtual "
+        "environment found on PATH"
+    )
 # write the hook file with a literal, resolved shebang, not a guess
 ```
 

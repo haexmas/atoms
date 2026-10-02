@@ -6,8 +6,8 @@ Refuses cleanly (no partial changes) if any precondition fails. Re-running is
 idempotent: hooks this installer wrote earlier are refreshed in place, and only a
 hook that came from another tool is refused. On success:
 - writes Git's effective hooks directory's ``post-commit``, ``post-merge`` and
-  ``post-checkout`` files with a shebang resolved to whichever of
-  ``python3``/``python`` is present outside any virtual environment;
+  ``post-checkout`` files with a shebang resolved to a Python 3 interpreter
+  outside any virtual environment;
 - copies the sibling helper modules into Git's effective hooks directory so the entrypoints'
   imports resolve regardless of where the atom lives on disk;
 - appends ``graphify-out/`` to ``.gitignore`` if not already present;
@@ -36,6 +36,7 @@ _HELPER_MODULES = ("_tracked_branches.py", "_refresh.py", "_snapshot.py")
 _GITIGNORE_LINE = "graphify-out/"
 _REGISTRATION_CONFIG_KEY = "graphify-first-authoring.registration"
 _REGISTRATION_CONFIG_VALUE = "installed"
+_INTERPRETER_CHECK_TIMEOUT_SECONDS = 5
 # Tail of the entrypoint docstring's opening line. ``_write_hook`` prepends only a
 # shebang, so this line is the second line of every hook this installer wrote.
 _MANAGED_HOOK_SIGNATURE = "hook entrypoint (shebang written by install.py at install time)."
@@ -50,13 +51,29 @@ def _is_virtualenv_dir(directory: Path) -> bool:
     return (directory.parent / "pyvenv.cfg").is_file()
 
 
+def _is_python3(interpreter: str) -> bool:
+    """Return whether ``interpreter`` runs Python 3, without invoking a shell."""
+    try:
+        result = subprocess.run(
+            [interpreter, "-c", "import sys; print(sys.version_info[0])"],
+            capture_output=True,
+            text=True,
+            timeout=_INTERPRETER_CHECK_TIMEOUT_SECONDS,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and result.stdout.strip() == "3"
+
+
 def _resolve_interpreter() -> str:
     """Return an absolute path to a working Python interpreter, or raise.
 
     Per research.md D1 / FR-015: ``python3`` first (modern Linux, macOS,
     WSL2), then ``python`` (native Windows). No polyglot shell wrapper.
 
-    Directories of virtual environments are skipped. The installer is usually
+    Directories of virtual environments are skipped, and each candidate is
+    verified to run Python 3. The installer is usually
     launched from a tool's own venv (for example a ``uv tool`` environment or a
     development checkout's ``.venv``), and a shebang pinned to such an
     interpreter breaks every hook as soon as that environment is rebuilt or
@@ -69,10 +86,10 @@ def _resolve_interpreter() -> str:
     )
     for candidate in ("python3", "python"):
         path = shutil.which(candidate, path=search_path)
-        if path:
+        if path and _is_python3(path):
             return path
     raise InstallError(
-        "No 'python3' or 'python' outside a virtual environment on PATH — "
+        "No Python 3 interpreter outside a virtual environment on PATH — "
         "install a system Python 3 interpreter and re-run the installer."
     )
 

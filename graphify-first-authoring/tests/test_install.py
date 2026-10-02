@@ -465,10 +465,10 @@ def test_gitignore_created_when_absent(
     assert (repo / ".gitignore").read_text().splitlines() == ["graphify-out/"]
 
 
-def _fake_interpreter(directory: Path) -> Path:
+def _fake_interpreter(directory: Path, name: str = "python3", major: int = 3) -> Path:
     directory.mkdir(parents=True)
-    interpreter = directory / "python3"
-    interpreter.write_text("#!/bin/sh\nexit 0\n")
+    interpreter = directory / name
+    interpreter.write_text(f"#!/bin/sh\nprintf '%s\\n' {major}\n")
     interpreter.chmod(0o755)
     return interpreter
 
@@ -495,4 +495,21 @@ def test_interpreter_refuses_when_only_a_virtualenv_provides_python(
     monkeypatch.setenv("PATH", str(venv_python.parent))
 
     with pytest.raises(installer.InstallError, match="outside a virtual environment"):
+        installer._resolve_interpreter()
+
+
+def test_interpreter_refuses_python2_fallback(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    venv_python = _fake_interpreter(tmp_path / "tool-venv" / "bin")
+    (tmp_path / "tool-venv" / "pyvenv.cfg").write_text("home = /usr/bin\n")
+    _fake_interpreter(tmp_path / "system" / "bin", name="python", major=2)
+    monkeypatch.setenv(
+        "PATH",
+        os.pathsep.join(
+            [str(venv_python.parent), str(tmp_path / "system" / "bin")]
+        ),
+    )
+
+    with pytest.raises(installer.InstallError, match="No Python 3 interpreter"):
         installer._resolve_interpreter()
