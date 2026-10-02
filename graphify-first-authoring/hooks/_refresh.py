@@ -136,7 +136,10 @@ def is_fresh(repo_root: Path) -> bool:
     if not (repo_root / "graphify-out" / "graph.json").is_file():
         return False
     try:
-        indexed = json.loads(meta.read_text(encoding="utf-8")).get("indexed_at_sha")
+        marker = json.loads(meta.read_text(encoding="utf-8"))
+        if not isinstance(marker, dict):
+            return False
+        indexed = marker.get("indexed_at_sha")
         head = subprocess.run(
             ["git", "-C", str(repo_root), "rev-parse", "HEAD"],
             capture_output=True,

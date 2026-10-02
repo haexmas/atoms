@@ -6,6 +6,7 @@ graphify's behavior without invoking the real binary.
 
 from __future__ import annotations
 
+import json
 import os
 import shutil
 from pathlib import Path
@@ -147,3 +148,22 @@ def test_refresh_never_raises(
         stderr="boom",
     )
     _refresh.refresh(tmp_path)
+
+
+@pytest.mark.parametrize("marker", [None, [], "not-an-object"])
+def test_non_object_freshness_marker_is_stale(
+    tmp_path: Path,
+    marker: object,
+    fp,
+) -> None:
+    graph = tmp_path / "graphify-out"
+    graph.mkdir()
+    (graph / "graph.json").write_text("{}\n")
+    (graph / ".meta.json").write_text(json.dumps(marker))
+    fp.register(
+        ["git", "-C", str(tmp_path), "rev-parse", "HEAD"],
+        returncode=0,
+        stdout="test-head\n",
+    )
+
+    assert _refresh.is_fresh(tmp_path) is False
