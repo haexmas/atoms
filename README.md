@@ -141,8 +141,11 @@ contributing a fragment via the composable `atoms.nix_packages` category:
 - [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`,
   `corepack_22`, `pnpm`.
 - [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
-  Linux system libraries and end-to-end test tooling (`tauri-driver`, the
-  WebKit driver, `xvfb-run`).
+  Linux system libraries, end-to-end test tooling (`tauri-driver`, the
+  WebKit driver, `xvfb-run`) and the Android build environment (SDK, NDK,
+  JDK, and Rust with the Android targets through
+  `.devshell/rust-toolchain.toml`, which `nix-devshell-base` builds with
+  rust-overlay).
 
 These are deliberately separate from the `coding-guideline-rust`/
 `coding-guideline-javascript-typescript` behavior molecules above: adopting

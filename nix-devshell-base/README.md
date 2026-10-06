@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.7.0`
+- Version: `0.9.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -131,6 +131,31 @@ extension point for a single contributor and not a composable category,
 and the file has to be tracked by git, because a flake only sees tracked
 files. [`com.github.haexmas.atoms.holzi`](../holzi/) is the first user
 (`tauri-driver` and the WebKit driver for end-to-end tests).
+
+### Rust toolchain with cross targets (v0.9.0+)
+
+nixpkgs' `rustc` carries the standard library of its host only, so a
+consumer that cross-compiles (Android, for one) cannot add a target to it.
+`flake.nix` therefore takes [rust-overlay](https://github.com/oxalica/rust-overlay)
+as a flake input and reads one more optional file,
+`.devshell/rust-toolchain.toml`, in the format of rustup's
+`rust-toolchain.toml` (channel, profile, components, targets). When the
+file exists, `pkgs.rust-bin.fromRustupToolchainFile` builds that toolchain
+and it replaces the nixpkgs Rust packages (`rustc`, `cargo`, `clippy`,
+`rustfmt`, as [`nix-rust`](../nix-rust/) contributes them): two `rustc` on
+`PATH` would leave it to the order which one builds. Without the file
+nothing changes; the overlay is applied, but nothing in the shell uses it.
+
+The file lives under `.devshell/` and not at the repo root on purpose:
+rustup reads a root `rust-toolchain.toml`, so a consumer whose CI installs
+Rust with rustup would suddenly build with this toolchain and download its
+targets there too. Like `.devshell/packages.nix` it is an exclusive atom of
+one molecule (spaex Spec 027) and must be tracked by git.
+[`com.github.haexmas.atoms.holzi`](../holzi/) is the first user (the
+Android targets).
+
+Adopting v0.9.0 adds the `rust-overlay` input: run `nix flake lock` once
+after `spaex install` and commit the updated `flake.lock`.
 
 ### Unfree packages
 
