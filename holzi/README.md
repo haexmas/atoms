@@ -8,10 +8,11 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.7.0`
-- Delivered atoms: a package fragment under `atoms.nix_packages` and
+- Version: `0.8.0`
+- Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
-  "End-to-end test tooling" below) — no
+  "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
+  under `atoms.rust_toolchain` (v0.8.0, see "Android builds" below) — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
@@ -141,6 +142,41 @@ vault events that keep open views current). That feature builds
 for it. Verified 2026-10-01 on CachyOS: `cargo build` of `libsqlite3-sys` with
 `preupdate_hook` fails with "Unable to find libclang" without it and succeeds
 with it. Needs `nix-devshell-base` 0.8.0 or later in the consumer.
+
+### Android builds (v0.8.0)
+
+holzi has to build for Android. `tauri android init` and `tauri android
+build` need four things the shell did not have:
+
+- **The Android SDK with its NDK.** `.devshell/packages.nix` composes it from
+  nixpkgs' `androidenv`: platforms 36 and 37.0 and build tools 36.0.0 and
+  37.0.0 (what the Android project of Tauri 2.12 asks for: `compileSdk = 37`
+  for the app, 36 for Tauri's own Android library, Android Gradle plugin 9.3),
+  the
+  platform tools and NDK 28.2.13676358; no emulator and no system images.
+  Adopting this molecule accepts the Android SDK license
+  (`androidenv.override { licenseAccepted = true; }`), as `sdkmanager
+  --licenses` would. The SDK exists for x86_64 Linux and macOS hosts only;
+  elsewhere it is left out.
+- **The environment the Tauri CLI and Gradle read.** A setup hook of the
+  same file sets `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `NDK_HOME`,
+  `ANDROID_NDK_ROOT` and `JAVA_HOME` when the shell starts. `NDK_HOME` is
+  the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard Android and
+  Nixpkgs variable used by native build dependencies.
+- **A JDK.** `jdk17` in the package fragment (Gradle and the Android Gradle
+  plugin need 17).
+- **Rust with the Android targets.** `.devshell/rust-toolchain.toml` asks for
+  Rust 1.98.1 (the version of nixpkgs' `rustc` before, so desktop builds see
+  the same compiler) with `aarch64-linux-android`, `armv7-linux-androideabi`,
+  `i686-linux-android` and `x86_64-linux-android`. It needs
+  [`nix-devshell-base`](../nix-devshell-base/) 0.9.0 or later, which builds
+  the toolchain from that file through rust-overlay and drops the nixpkgs
+  Rust packages of [`nix-rust`](../nix-rust/) from the shell. A version bump
+  changes `channel` there.
+
+The first start of the shell downloads the SDK, the NDK and the toolchain
+(a few GB). holzi's `src-tauri/build.rs` only rewrites the ELF interpreter
+for `target_os = "linux"`, so Android builds are not touched by it.
 
 ### `scripts/with-nix-host-bridge.sh` (holzi repo, not this molecule)
 
