@@ -159,8 +159,10 @@ build` need four things the shell did not have:
   --licenses` would. The SDK exists for x86_64 Linux and macOS hosts only;
   elsewhere it is left out.
 - **The environment the Tauri CLI and Gradle read.** A setup hook of the
-  same file sets `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `NDK_HOME` and
-  `JAVA_HOME` when the shell starts.
+  same file sets `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `NDK_HOME`,
+  `ANDROID_NDK_ROOT` and `JAVA_HOME` when the shell starts. `NDK_HOME` is
+  the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard Android and
+  Nixpkgs variable used by native build dependencies.
 - **A JDK.** `jdk17` in the package fragment (Gradle and the Android Gradle
   plugin need 17).
 - **Rust with the Android targets.** `.devshell/rust-toolchain.toml` asks for
