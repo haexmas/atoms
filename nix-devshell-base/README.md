@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.9.0`
+- Version: `0.9.1`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
