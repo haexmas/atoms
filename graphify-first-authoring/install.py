@@ -34,6 +34,10 @@ import _tracked_branches  # noqa: E402
 _HOOK_NAMES = ("post-commit", "post-merge", "post-checkout")
 _HELPER_MODULES = ("_tracked_branches.py", "_refresh.py", "_snapshot.py")
 _GITIGNORE_LINE = "graphify-out/"
+# Root-level spellings that already ignore the graph directory.
+_GITIGNORE_EQUIVALENTS = frozenset(
+    {"graphify-out", "graphify-out/", "/graphify-out", "/graphify-out/"}
+)
 _REGISTRATION_CONFIG_KEY = "graphify-first-authoring.registration"
 _REGISTRATION_CONFIG_VALUE = "installed"
 _INTERPRETER_CHECK_TIMEOUT_SECONDS = 5
@@ -252,11 +256,11 @@ def _copy_helpers(hooks_dir: Path) -> None:
 
 
 def _ensure_gitignore_line(repo_root: Path) -> None:
-    """FR-017: add ``graphify-out/`` to ``.gitignore`` if not already present."""
+    """FR-017: add ``graphify-out/`` to ``.gitignore`` unless an equivalent line exists."""
     gitignore = repo_root / ".gitignore"
     if gitignore.exists():
         lines = gitignore.read_text(encoding="utf-8").splitlines()
-        if _GITIGNORE_LINE in {line.strip() for line in lines}:
+        if _GITIGNORE_EQUIVALENTS & {line.strip() for line in lines}:
             return
         with gitignore.open("a", encoding="utf-8") as fh:
             if lines and lines[-1] != "":

@@ -338,6 +338,23 @@ def test_gitignore_line_not_duplicated(
     assert lines.count("graphify-out/") == 1
 
 
+@pytest.mark.parametrize("existing", ["graphify-out", "/graphify-out", "/graphify-out/"])
+def test_gitignore_equivalent_line_is_kept(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    existing: str,
+) -> None:
+    repo = _make_tracked_repo(tmp_path)
+    (repo / ".gitignore").write_text(f"*.log\n{existing}\n")
+    bin_dir = tmp_path / "bin"
+    _put_graphify_stub(bin_dir)
+    _prepend_path(monkeypatch, bin_dir)
+    monkeypatch.chdir(repo)
+
+    assert installer.install() == 0
+    assert (repo / ".gitignore").read_text() == f"*.log\n{existing}\n"
+
+
 def test_graphify_install_requires_registration_marker(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
