@@ -19,5 +19,6 @@
   "gcc.cc.lib",
   "xvfb-run",
   "llvmPackages.libclang.lib",
-  "jdk17"
+  "jdk17",
+  "iroh-relay"
 ]
