@@ -60,6 +60,24 @@ let
     ''
   );
 
+  # The local relay must use the same release as holzi's Cargo.lock. nixpkgs can lag behind that
+  # release, and the relay's CLI/configuration is part of the e2e contract.
+  iroh-relay = pkgs.rustPlatform.buildRustPackage rec {
+    pname = "iroh-relay";
+    version = "1.3.0";
+    src = pkgs.fetchFromGitHub {
+      owner = "n0-computer";
+      repo = "iroh";
+      rev = "v${version}";
+      hash = "sha256-ugGYRESccGgkI8evd21NE3jzNgULDEHwuf0UWdqKp6A=";
+    };
+    cargoHash = "sha256-L0OnbXUC8JNW+/Xm0Q/8EjSlGmKYGvQQM+SqrRLb8mQ=";
+    buildFeatures = [ "server" ];
+    cargoBuildFlags = [ "--bin" "iroh-relay" ];
+    nativeBuildInputs = [ pkgs.lld ];
+    doCheck = false;
+  };
+
   # androidenv provides the SDK for x86_64 Linux and macOS hosts only.
   androidHost =
     (pkgs.stdenv.hostPlatform.isLinux && pkgs.stdenv.hostPlatform.isx86_64)
@@ -128,3 +146,4 @@ in
 pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [ tauri-driver webkit-webdriver ]
 ++ pkgs.lib.optionals androidHost [ androidSdk android-env ]
 ++ pkgs.lib.optionals emulatorHost [ holzi-emulator chromedriver ]
+++ [ iroh-relay ]
