@@ -8,11 +8,12 @@ Linux, beyond what the generic
 provide.
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.8.0`
+- Version: `0.9.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
-  under `atoms.rust_toolchain` (v0.8.0, see "Android builds" below) — no
+  under `atoms.rust_toolchain` (v0.8.0, see "Android builds" below; the
+  emulator since v0.9.0, see "Android emulator for e2e" below) — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
@@ -177,6 +178,35 @@ build` need four things the shell did not have:
 The first start of the shell downloads the SDK, the NDK and the toolchain
 (a few GB). holzi's `src-tauri/build.rs` only rewrites the ELF interpreter
 for `target_os = "linux"`, so Android builds are not touched by it.
+
+### Android emulator for e2e (v0.9.0)
+
+holzi's e2e suite also runs on an Android emulator (`pnpm test:e2e --platform
+android`), and its CI starts one: API 35, `google_apis`, x86_64, 4 cores.
+The shell now brings the same one, so the Android runs work locally too:
+
+- **`holzi-emulator`** creates the AVD `holzi-api35` the way the CI's
+  emulator action does (once, under `~/.android/avd`) and starts it with
+  software rendering; extra arguments go to the emulator (`-no-window`,
+  `-wipe-data`, `-no-snapshot-save`). adb sees it as `emulator-5554`, the
+  `ANDROID_SERIAL` the runner reads. Its SDK (platform 35, the emulator,
+  the system image) is a separate androidenv composition: androidenv takes
+  the system images of every platform it composes, and the build SDK has
+  36 and 37.0. Only the script sees it; `ANDROID_HOME` stays the build SDK.
+- **`chromedriver`** drives the app's web view and has to have its major
+  version. The system image ships WebView 124, so this is chromedriver
+  124.0.6367.207 from Chrome for Testing (linux64, patched with
+  `autoPatchelfHook`). A nixpkgs bump that brings a system image with
+  another web view needs a new `version` and `hash`; the runner's preflight
+  names the mismatch.
+- **`iroh-relay`** (package fragment): the relay the devices of a group
+  meet through in an Android run (`iroh-relay --dev`). nixpkgs builds it
+  with the server; its version should match `iroh-relay` in holzi's
+  `src-tauri/Cargo.lock`.
+
+The emulator and chromedriver exist for x86_64 Linux only (KVM, Chrome for
+Testing's linux64). The first start of the shell downloads the system
+image (about 3.5 GB unpacked).
 
 ### `scripts/with-nix-host-bridge.sh` (holzi repo, not this molecule)
 
