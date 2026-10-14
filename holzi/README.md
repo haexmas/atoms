@@ -1,19 +1,20 @@
 # holzi devShell extras
 
-A `nix_packages`-only molecule contributing the system libraries
+A molecule contributing the system libraries
 [holzi](https://github.com/haexmas/holzi)'s Tauri v2 app needs to build on
 Linux, beyond what the generic
 [`com.github.haexmas.atoms.nix-rust`](../nix-rust/) and
 [`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/) molecules already
-provide.
+provide, plus one behavior rule for agents working in holzi (v0.10.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.9.0`
+- Version: `0.10.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
   under `atoms.rust_toolchain` (v0.8.0, see "Android builds" below; the
-  emulator since v0.9.0, see "Android emulator for e2e" below) — no
+  emulator since v0.9.0, see "Android emulator for e2e" below) and
+  `constitution.md` under `atoms.behavior` (v0.10.0, see "Agent rule" below) — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
@@ -222,6 +223,16 @@ own) in a way GTK's icon loading can see — the script generates a
 combined `gdk-pixbuf-query-loaders` cache for both at devShell-shellHook
 time. All Linux-host-specific (Arch/CachyOS-family paths); adjust for
 other distros.
+
+### Agent rule: run the tooling inside the devShell (v0.10.0)
+
+`constitution.md` is a behavior fragment that tells agents to run `node`, `pnpm`
+and `cargo` through `nix develop --command`, `cargo` additionally through
+`scripts/with-nix-host-bridge.sh`, to install dependencies for real in a fresh
+worktree, and to run Prettier on every Markdown or JSON file a change touches
+(`pnpm format:check` covers `specs/` and `docs/` in CI). An agent's shell does not
+load the devShell, so a bare `prettier` or `pnpm` fails with `node: not found`; the
+packages were never missing. The rule is a `SHOULD` and installs nothing.
 
 ## Adopting
 
