@@ -36,10 +36,11 @@ When working in a Go codebase:
   has several genuinely optional settings.
 - Never start a goroutine without knowing how and when it ends. The code that
   starts it owns its lifetime: wait for it with `sync.WaitGroup` or
-  `errgroup`, stop it through a context, and let the sender close a channel,
-  never the receiver. Protect shared mutable state with a mutex or confine it
-  to one goroutine. Do not rely on a loop variable's per-iteration semantics
-  unless `go.mod` declares a Go version that guarantees them.
+  `errgroup`, stop it through a context, and let the sole sender, or an owner
+  that coordinates all senders, close a channel, never the receiver. Protect
+  shared mutable state with a mutex or confine it to one goroutine. Do not rely
+  on a loop variable's per-iteration semantics unless `go.mod` declares a Go
+  version that guarantees them.
 - Keep packages small and named for what they provide: short, lowercase, and
   without underscores. Avoid catch-all names such as `util` or `common`, and
   avoid stutter such as `user.UserService`. Put code that must not be imported
@@ -62,11 +63,11 @@ When working in a Go codebase:
   only for a concrete need, and keep `go.mod` and `go.sum` consistent with
   `go mod tidy`. Use generics only where they remove real duplication; a plain
   function or interface is usually clearer.
-- Before handing off a change, run `gofmt -l .`, `go vet ./...`, and
-  `go test ./...` when the project supports those commands. Add `-race` for
-  code with concurrency. Run `golangci-lint run` and `govulncheck ./...` when
-  the project configures them, and follow documented command variants when
-  they differ.
+- Before handing off a change, verify that `gofmt -l .` prints no files, then
+  run `go vet ./...` and `go test ./...` when the project supports those
+  commands. Add `-race` for code with concurrency. Run `golangci-lint run` and
+  `govulncheck ./...` when the project configures them, and follow documented
+  command variants when they differ.
 
 Choose the smallest correct implementation that fits the existing module's
 conventions. Do not introduce a new dependency, abstraction layer, or

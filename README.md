@@ -110,8 +110,11 @@ deliberately small and can be adopted independently:
 - `com.github.haexmas.atoms.coding-guideline-python` — typing, explicit data
   models, validation, exceptions, resource management, async code, and
   verification; includes Python testing guidance.
+- `com.github.haexmas.atoms.coding-guideline-go` — error handling, contexts,
+  interfaces, concurrency, resource handling, process execution, and Go
+  testing practices.
 
-All three are behavior molecules delivered through `atoms.behavior` only.
+All four are behavior molecules delivered through `atoms.behavior` only.
 They are baseline guidance: a consuming project's explicit conventions and
 supported runtime versions remain authoritative. None of them provision a
 toolchain — see "Nix devShells" below for the separate, dedicated

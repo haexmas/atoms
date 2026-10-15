@@ -25,8 +25,9 @@ When testing a Go codebase:
   the project's Go version provides.
 - Use the helpers of the `testing` package: `t.Helper()` in assertion helpers,
   `t.Cleanup` for teardown, `t.TempDir()` for files, and `t.Setenv` for
-  environment variables. Call `t.Parallel()` only for tests that share no
-  state.
+  environment variables. Do not combine `t.Setenv` with `t.Parallel()` because
+  environment variables are process-global. Call `t.Parallel()` only for tests
+  that share no state.
 - Prefer small hand-written fakes over generated mocks. For HTTP use
   `net/http/httptest`. For code that runs external programs, hide the runner
   behind a small interface that a test can replace, so tests do not execute
