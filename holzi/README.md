@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide, plus one behavior rule for agents working in holzi (v0.10.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.10.0`
+- Version: `0.11.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
@@ -233,6 +233,16 @@ worktree, and to run Prettier on every Markdown or JSON file a change touches
 (`pnpm format:check` covers `specs/` and `docs/` in CI). An agent's shell does not
 load the devShell, so a bare `prettier` or `pnpm` fails with `node: not found`; the
 packages were never missing. The rule is a `SHOULD` and installs nothing.
+
+### cmake for llama.cpp (v0.11.0)
+
+`cmake`: holzi's second local inference engine (holzi spec 070) is llama.cpp,
+built from source by the `llama-cpp-sys-2` crate's build script, which drives
+CMake. The engine becomes part of holzi's default features, so every build of
+the app needs `cmake` on PATH; CI's runners have it, the devShell did not.
+Verified 2026-10-31 on CachyOS: with nixpkgs' `cmake` (4.4.4) on PATH inside
+the devShell, `cargo build` of `llama-cpp-sys-2` 0.1.160 (CPU, Android NDK and
+CUDA) succeeds; without it the build script stops at "is `cmake` not installed?".
 
 ## Adopting
 
