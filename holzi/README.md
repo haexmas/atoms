@@ -236,7 +236,7 @@ worktree, and to run Prettier on every Markdown or JSON file a change touches
 load the devShell, so a bare `prettier` or `pnpm` fails with `node: not found`; the
 packages were never missing. The rule is a `SHOULD` and installs nothing.
 
-### cmake for llama.cpp (v0.11.0)
+### llama.cpp: cmake, the NDK and static CUDA (v0.11.0)
 
 `cmake`: holzi's second local inference engine (holzi spec 070) is llama.cpp,
 built from source by the `llama-cpp-sys-2` crate's build script, which drives
@@ -246,7 +246,15 @@ Verified 2026-10-31 on CachyOS: with nixpkgs' `cmake` (4.4.4) on PATH inside
 the devShell, `cargo build` of `llama-cpp-sys-2` 0.1.160 (CPU, Android NDK and
 CUDA) succeeds; without it the build script stops at "is `cmake` not installed?".
 The same version exports `ANDROID_NDK` for that build script (see "Android
-builds" above).
+builds" above), and `CUDA_LIBRARY_PATH` for llama.cpp's CUDA build
+(`llm-llamacpp-cuda`, x86_64 Linux only): it links cudart and cuBLAS
+statically, so the app needs only the NVIDIA driver at run time, and the build
+script looks for the static libraries in `$CUDA_LIBRARY_PATH/lib64`. nixpkgs'
+`cudatoolkit` has no `lib64` and keeps static cuBLAS in
+`cudaPackages.libcublas.static`, so `.devshell/packages.nix` gathers
+`libcudart_static.a`, `libculibos.a`, `libcublas_static.a`,
+`libcublasLt_static.a` and `stubs` into one directory. The shell downloads
+static cuBLAS (about 1.2 GB) whether or not a CUDA build follows.
 
 ## Adopting
 
