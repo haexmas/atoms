@@ -162,9 +162,11 @@ build` need four things the shell did not have:
   elsewhere it is left out.
 - **The environment the Tauri CLI and Gradle read.** A setup hook of the
   same file sets `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `NDK_HOME`,
-  `ANDROID_NDK_ROOT` and `JAVA_HOME` when the shell starts. `NDK_HOME` is
-  the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard Android and
-  Nixpkgs variable used by native build dependencies.
+  `ANDROID_NDK_ROOT`, `ANDROID_NDK` and `JAVA_HOME` when the shell starts.
+  `NDK_HOME` is the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard
+  Android and Nixpkgs variable used by native build dependencies;
+  `ANDROID_NDK` is what llama.cpp's build script (`llama-cpp-sys-2`) reads,
+  which otherwise takes the newest NDK it finds (v0.11.0).
 - **A JDK.** `jdk17` in the package fragment (Gradle and the Android Gradle
   plugin need 17).
 - **Rust with the Android targets.** `.devshell/rust-toolchain.toml` asks for
@@ -243,6 +245,8 @@ the app needs `cmake` on PATH; CI's runners have it, the devShell did not.
 Verified 2026-10-31 on CachyOS: with nixpkgs' `cmake` (4.4.4) on PATH inside
 the devShell, `cargo build` of `llama-cpp-sys-2` 0.1.160 (CPU, Android NDK and
 CUDA) succeeds; without it the build script stops at "is `cmake` not installed?".
+The same version exports `ANDROID_NDK` for that build script (see "Android
+builds" above).
 
 ## Adopting
 

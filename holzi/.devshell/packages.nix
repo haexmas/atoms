@@ -56,6 +56,7 @@ let
       export ANDROID_SDK_ROOT="$ANDROID_HOME"
       export NDK_HOME="$ANDROID_HOME/ndk/${ndkVersion}"
       export ANDROID_NDK_ROOT="$NDK_HOME"
+      export ANDROID_NDK="$NDK_HOME"
       export JAVA_HOME=${pkgs.jdk17.home}
     ''
   );
