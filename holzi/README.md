@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide, plus one behavior rule for agents working in holzi (v0.10.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.10.0`
+- Version: `0.11.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
@@ -162,9 +162,11 @@ build` need four things the shell did not have:
   elsewhere it is left out.
 - **The environment the Tauri CLI and Gradle read.** A setup hook of the
   same file sets `ANDROID_HOME`, `ANDROID_SDK_ROOT`, `NDK_HOME`,
-  `ANDROID_NDK_ROOT` and `JAVA_HOME` when the shell starts. `NDK_HOME` is
-  the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard Android and
-  Nixpkgs variable used by native build dependencies.
+  `ANDROID_NDK_ROOT`, `ANDROID_NDK` and `JAVA_HOME` when the shell starts.
+  `NDK_HOME` is the Tauri/Wry convention; `ANDROID_NDK_ROOT` is the standard
+  Android and Nixpkgs variable used by native build dependencies;
+  `ANDROID_NDK` is what llama.cpp's build script (`llama-cpp-sys-2`) reads,
+  which otherwise takes the newest NDK it finds (v0.11.0).
 - **A JDK.** `jdk17` in the package fragment (Gradle and the Android Gradle
   plugin need 17).
 - **Rust with the Android targets.** `.devshell/rust-toolchain.toml` asks for
@@ -233,6 +235,26 @@ worktree, and to run Prettier on every Markdown or JSON file a change touches
 (`pnpm format:check` covers `specs/` and `docs/` in CI). An agent's shell does not
 load the devShell, so a bare `prettier` or `pnpm` fails with `node: not found`; the
 packages were never missing. The rule is a `SHOULD` and installs nothing.
+
+### llama.cpp: cmake, the NDK and static CUDA (v0.11.0)
+
+`cmake`: holzi's second local inference engine (holzi spec 070) is llama.cpp,
+built from source by the `llama-cpp-sys-2` crate's build script, which drives
+CMake. The engine becomes part of holzi's default features, so every build of
+the app needs `cmake` on PATH; CI's runners have it, the devShell did not.
+Verified 2026-10-31 on CachyOS: with nixpkgs' `cmake` (4.4.4) on PATH inside
+the devShell, `cargo build` of `llama-cpp-sys-2` 0.1.160 (CPU, Android NDK and
+CUDA) succeeds; without it the build script stops at "is `cmake` not installed?".
+The same version exports `ANDROID_NDK` for that build script (see "Android
+builds" above), and `CUDA_LIBRARY_PATH` for llama.cpp's CUDA build
+(`llm-llamacpp-cuda`, x86_64 Linux only): it links cudart and cuBLAS
+statically, so the app needs only the NVIDIA driver at run time, and the build
+script looks for the static libraries in `$CUDA_LIBRARY_PATH/lib64`. nixpkgs'
+`cudatoolkit` has no `lib64` and keeps static cuBLAS in
+`cudaPackages.libcublas.static`, so `.devshell/packages.nix` gathers
+`libcudart_static.a`, `libculibos.a`, `libcublas_static.a`,
+`libcublasLt_static.a` and `stubs` into one directory. The shell downloads
+static cuBLAS (about 1.2 GB) whether or not a CUDA build follows.
 
 ## Adopting
 
