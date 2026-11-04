@@ -5,7 +5,7 @@ A molecule contributing the system libraries
 Linux, beyond what the generic
 [`com.github.haexmas.atoms.nix-rust`](../nix-rust/) and
 [`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/) molecules already
-provide, plus one behavior rule for agents working in holzi (v0.10.0).
+provide, plus behavior rules for agents working in holzi (v0.10.0 and v0.12.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
 - Version: `0.12.0`

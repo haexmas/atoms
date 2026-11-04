@@ -4,6 +4,7 @@ kind: constitution_fragment
 atom_source: holzi-ui-feedback
 tags: [holzi, ui, settings, toast, feedback, errors]
 ---
+
 # Capability: give feedback in holzi's UI without inline status lines
 
 **Status**: Part of molecule `com.github.haexmas.atoms.holzi`.
