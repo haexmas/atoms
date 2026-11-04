@@ -1,7 +1,7 @@
 {
   "spaex_version": "4",
   "id": "com.github.haexmas.atoms.holzi",
-  "version": "0.11.0",
+  "version": "0.12.0",
   "priority": 20,
   "atoms": {
     "nix_packages": [
@@ -14,7 +14,8 @@
       ".devshell/rust-toolchain.toml"
     ],
     "behavior": [
-      "constitution.md"
+      "constitution.md",
+      "ui-feedback.md"
     ]
   }
 }
