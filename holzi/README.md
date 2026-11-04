@@ -279,6 +279,8 @@ UI: settings apply on selection without a save button or a "Gespeichert." line; 
 card or dialog shows a success message inside itself after an action, not even as a changed
 button label (the visible state is the confirmation, a success toast only when the outcome is
 visible nowhere else; a changed icon on a button is fine); and every error of
-a load, a save or an action is a toast (`vue-sonner`), never an inline red line. Field
-validation hints and standing states that are not the result of the last action stay inline.
+a load, a save or an action is a toast (`vue-sonner`), never an inline red line. A wrong input
+shows directly under its field; an error that ends a flow with actions shows its message as a
+toast and keeps only the buttons; standing states that are not the result of the last action
+stay inline.
 The rules are `MUST`s and install nothing.
