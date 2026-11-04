@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide, plus behavior rules for agents working in holzi (v0.10.0 and v0.12.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.12.0`
+- Version: `0.12.1`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
