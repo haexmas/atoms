@@ -12,16 +12,18 @@ a holzi checkout or worktree.
 
 ## Rule
 
-holzi's operator decided (2026-11-03 and 2026-11-04) that a component never reports the outcome
-of an action with a line of text inside itself. The visible state is the confirmation; a failure
-is a toast.
+holzi's operator decided (2026-11-03 and 2026-11-04) that success and error messages appear only
+as toasts, so they look the same everywhere. A component never reports the outcome of an action
+with text inside itself. The visible state is the confirmation; a failure is a toast.
 
 - A setting MUST apply on selection, without a save or apply button and without a confirmation
   such as "Gespeichert."; a button that resets to the default is fine.
 - A component, card, row or dialog MUST NOT show a success message inside itself after an action
-  (for example "Gespeichert.", "Modelle aktualisiert.", "Verbunden."). The changed state the user
-  sees is the confirmation. Only when the outcome is visible nowhere else, such as a file written
-  by an export, MAY it show as a success toast (`toast.success` from `vue-sonner`).
+  (for example "Gespeichert.", "Modelle aktualisiert.", "Verbunden."), and a button MUST NOT
+  switch its label to one ("Kopiert"). The changed state the user sees is the confirmation. Only
+  when the outcome is visible nowhere else, such as a copy, a passed connection test or a file
+  written by an export, MAY it show as a success toast (`toast.success` from `vue-sonner`). An
+  icon on a button MAY change to show its state (a copy icon turning into a check mark).
 - An error of a load, a save or any other action MUST show as a toast (`toast.error` from
   `vue-sonner`), in pages and dialogs alike, never as an inline `text-destructive` or
   `role="alert"` line.
