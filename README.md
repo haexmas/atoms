@@ -148,7 +148,9 @@ contributing a fragment via the composable `atoms.nix_packages` category:
   WebKit driver, `xvfb-run`) and the Android build environment (SDK, NDK,
   JDK, and Rust with the Android targets through
   `.devshell/rust-toolchain.toml`, which `nix-devshell-base` builds with
-  rust-overlay).
+  rust-overlay), plus two agent rules for holzi: run the tooling inside the
+  devShell, and give UI feedback without inline status lines (errors as
+  toasts, no success messages inside components).
 
 These are deliberately separate from the `coding-guideline-rust`/
 `coding-guideline-javascript-typescript` behavior molecules above: adopting

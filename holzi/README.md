@@ -8,13 +8,14 @@ Linux, beyond what the generic
 provide, plus one behavior rule for agents working in holzi (v0.10.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.11.0`
+- Version: `0.12.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
   under `atoms.rust_toolchain` (v0.8.0, see "Android builds" below; the
   emulator since v0.9.0, see "Android emulator for e2e" below) and
-  `constitution.md` under `atoms.behavior` (v0.10.0, see "Agent rule" below) — no
+  `constitution.md` under `atoms.behavior` (v0.10.0, see "Agent rule" below) and
+  `ui-feedback.md` under `atoms.behavior` (v0.12.0, see "UI feedback rule" below) — no
   `flake.nix` of its own (adopt
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
@@ -270,3 +271,13 @@ commit SHA of this publisher repository:
 ```
 
 Then run `spaex install`.
+
+### UI feedback rule: no inline status lines (v0.12.0)
+
+`ui-feedback.md` is a behavior fragment with holzi's operator decisions on feedback in the
+UI: settings apply on selection without a save button or a "Gespeichert." line; no component,
+card or dialog shows a success message inside itself after an action (the visible state is the
+confirmation, a success toast only when the outcome is visible nowhere else); and every error of
+a load, a save or an action is a toast (`vue-sonner`), never an inline red line. Field
+validation hints and standing states that are not the result of the last action stay inline.
+The rules are `MUST`s and install nothing.

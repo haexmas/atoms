@@ -1,0 +1,42 @@
+---
+id: holzi-ui-feedback
+kind: constitution_fragment
+atom_source: holzi-ui-feedback
+tags: [holzi, ui, settings, toast, feedback, errors]
+---
+# Capability: give feedback in holzi's UI without inline status lines
+
+**Status**: Part of molecule `com.github.haexmas.atoms.holzi`.
+**Applies to**: agents that write or change user-facing components, pages, dialogs or settings in
+a holzi checkout or worktree.
+
+## Rule
+
+holzi's operator decided (2026-11-03 and 2026-11-04) that a component never reports the outcome
+of an action with a line of text inside itself. The visible state is the confirmation; a failure
+is a toast.
+
+- A setting MUST apply on selection, without a save or apply button and without a confirmation
+  such as "Gespeichert."; a button that resets to the default is fine.
+- A component, card, row or dialog MUST NOT show a success message inside itself after an action
+  (for example "Gespeichert.", "Modelle aktualisiert.", "Verbunden."). The changed state the user
+  sees is the confirmation. Only when the outcome is visible nowhere else, such as a file written
+  by an export, MAY it show as a success toast (`toast.success` from `vue-sonner`).
+- An error of a load, a save or any other action MUST show as a toast (`toast.error` from
+  `vue-sonner`), in pages and dialogs alike, never as an inline `text-destructive` or
+  `role="alert"` line.
+
+## Operating protocol
+
+1. Before adding text that appears after an action, ask whether the UI already shows the new
+   state. If it does, add nothing; if it does not, and only then, use a success toast.
+2. Route every caught action error to `toast.error(...)` with the localized message. Keep a
+   boolean only where the failure also changes what the page renders (an empty-state notice that
+   must not claim "no entries" after a failed load).
+3. These are not outcome messages and stay inline: validation hints at the field they concern,
+   and standing states that are not the result of the last action (a denied permission, an
+   insecure source warning, a confirmation question, a crashed extension with a reload button).
+4. End-to-end tests read error toasts with the shared helper (`scripts/e2e/lib/toasts.ts`) and
+   check a saved value by reading it back, not by waiting for a confirmation line.
+5. When a component imports `vue-sonner` and is loaded by `scripts/lib/script-setup-sandbox.ts`
+   in a Node check, give the check a `'vue-sonner'` import double.
