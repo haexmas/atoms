@@ -20,5 +20,6 @@
   "xvfb-run",
   "llvmPackages.libclang.lib",
   "jdk17",
-  "cmake"
+  "cmake",
+  "xz"
 ]

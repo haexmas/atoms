@@ -8,7 +8,7 @@ Linux, beyond what the generic
 provide, plus behavior rules for agents working in holzi (v0.10.0 and v0.12.0).
 
 - Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.12.1`
+- Version: `0.13.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
@@ -284,3 +284,15 @@ shows directly under its field; an error that ends a flow with actions shows its
 toast and keeps only the buttons; standing states that are not the result of the last action
 stay inline.
 The rules are `MUST`s and install nothing.
+
+### xz: the Tauri CLI's native binding (v0.13.0)
+
+`xz`: `@tauri-apps/cli` 2.12.5 ships a native binding (`cli.linux-x64-gnu.node`)
+that links `liblzma.so.5` dynamically; 2.12.4 did not. Nix's dynamic linker does
+not consult the host's `ld.so.cache`, so inside the devShell the binding failed to
+load and every `pnpm tauri ...` script stopped before building anything with
+`Cannot find native binding` / `liblzma.so.5: cannot open shared object file`
+(seen 2026-11-20 after Dependabot bumped the CLI; `pnpm tauri:dev:cuda` and
+`pnpm tauri:dev` alike). The devShell's `LD_LIBRARY_PATH` is built from the
+contributed packages, so adding `xz` is enough; with it `pnpm exec tauri --version`
+prints `tauri-cli 2.12.5` again.
