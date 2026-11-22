@@ -1,14 +1,14 @@
-# holzi devShell extras
+# haex-vault devShell extras
 
 A molecule contributing the system libraries
-[holzi](https://github.com/haexmas/holzi)'s Tauri v2 app needs to build on
+[haex-vault](https://github.com/haex-space/haex-vault)'s Tauri v2 app needs to build on
 Linux, beyond what the generic
 [`com.github.haexmas.atoms.nix-rust`](../nix-rust/) and
 [`com.github.haexmas.atoms.nix-nodejs`](../nix-nodejs/) molecules already
-provide, plus behavior rules for agents working in holzi (v0.10.0 and v0.12.0).
+provide, plus behavior rules for agents working in haex-vault (v0.10.0 and v0.12.0).
 
-- Atom id: `com.github.haexmas.atoms.holzi`
-- Version: `0.13.0`
+- Atom id: `com.github.haexmas.atoms.haex-vault`
+- Version: `0.14.0`
 - Delivered atoms: a package fragment under `atoms.nix_packages`,
   `.devshell/packages.nix` under `atoms.devshell_packages` (v0.6.0, see
   "End-to-end test tooling" below) and `.devshell/rust-toolchain.toml`
@@ -20,17 +20,17 @@ provide, plus behavior rules for agents working in holzi (v0.10.0 and v0.12.0).
   [`com.github.haexmas.atoms.nix-devshell-base`](../nix-devshell-base/)
   for that).
 
-This molecule is deliberately scoped to holzi, not a generic "Tauri"
+This molecule is deliberately scoped to haex-vault, not a generic "Tauri"
 molecule: the package list (`libayatana-appindicator`,
 `librsvg`, `alsa-lib`, `xdotool`, `openssl`, plus the usual `curl`/`wget`/
-`file`/`pkg-config`) mirrors holzi's own
-[`.github/workflows/ci.yml`](https://github.com/haexmas/holzi/blob/main/.github/workflows/ci.yml)
+`file`/`pkg-config`) mirrors haex-vault's own
+[`.github/workflows/ci.yml`](https://github.com/haex-space/haex-vault/blob/main/.github/workflows/ci.yml)
 Linux build-dependency list, not a researched general Tauri baseline. If a
 second Tauri app wants the same set, generalize then — not speculatively
 now.
 
 `cudatoolkit` (v0.2.0) is the one exception not mirrored from CI: CI has
-no GPU, so it never builds holzi's `llm-cuda` feature. It's here for the
+no GPU, so it never builds haex-vault's `llm-cuda` feature. It's here for the
 manual `pnpm tauri:dev:cuda`/`tauri:build:cuda` smoke test on a
 CUDA-capable dev machine (Etappe-0 finding #3 — `mistralrs/cuda`'s
 `cudarc` build script needs `nvcc` on `PATH`). It's an unfree package
@@ -39,13 +39,13 @@ CUDA-capable dev machine (Etappe-0 finding #3 — `mistralrs/cuda`'s
 README for why that molecule's `flake.nix` needs `allowUnfree`.
 
 `lld` (v0.3.0) works around a linker-ordering bug that only shows up once
-`cudatoolkit` is in play: enabling holzi's `llm-cuda` feature (`cudarc`)
+`cudatoolkit` is in play: enabling haex-vault's `llm-cuda` feature (`cudarc`)
 reshapes the crate dependency graph enough to change the order Cargo
 emits native-library link args in, and GNU `ld.bfd` (order-sensitive,
 single-pass symbol resolution) then fails with spurious `undefined
 reference` errors against `libgtk-3`/`libcairo`/`libwebkit2gtk` symbols
 that resolve fine on a plain (non-CUDA) build. `lld` isn't
-order-sensitive the same way and resolves cleanly — see holzi's
+order-sensitive the same way and resolves cleanly — see haex-vault's
 `src-tauri/build.rs`, which sets `-fuse-ld=lld` (and two more linker
 flags, below) only when `CARGO_FEATURE_LLM_CUDA` is set, never
 unconditionally: CI (ubuntu-24.04, no GPU) never builds this feature and
@@ -54,7 +54,7 @@ would have broken it. Verified live: `cargo build --features llm-cuda`
 fails reproducibly with `ld.bfd`, succeeds with `-fuse-ld=lld`.
 
 `gtk3` (v0.4.0) plus `cairo`, `glib.out`, `gdk-pixbuf`, `dbus.lib`,
-`libsoup_3`, `gcc.cc.lib`: holzi's Tauri binary directly links a whole
+`libsoup_3`, `gcc.cc.lib`: haex-vault's Tauri binary directly links a whole
 GTK stack (`libgtk-3`, `libcairo`, `libglib-2.0`/`libgobject-2.0`/
 `libgio-2.0`, `libgdk_pixbuf-2.0`, `libdbus-1`, `libsoup-3.0`), and none
 of it was ever actually resolvable at *runtime* before this — nothing
@@ -65,7 +65,7 @@ whether or not CUDA was involved; nobody had noticed yet because
 `cudatoolkit`'s own libraries happened to be earlier in the binary's
 needed-library list and masked it. `gcc.cc.lib` is the one CUDA-only
 addition here (`libstdc++`/`libgcc_s`, needed transitively by `cudarc`'s
-C++ CUDA libraries, not by holzi's own Rust code, nor by GTK).
+C++ CUDA libraries, not by haex-vault's own Rust code, nor by GTK).
 
 Some of these packages split their shared library into a non-default
 output (`dbus`'s default output has no `lib/`; plain `glib` resolves to
@@ -86,7 +86,7 @@ either a full from-source WebKit rebuild just to relink two `patchelf`
 calls, or accepting that they're always Nix-glibc-linked and will ABI-
 clash with anything host-provided they end up needing. Neither is worth
 it: `sudo pacman -S webkit2gtk-4.1` (or the consumer's own distro
-equivalent) instead, and `scripts/with-nix-host-bridge.sh` in holzi
+equivalent) instead, and `scripts/with-nix-host-bridge.sh` in haex-vault
 puts the host's `/usr/lib/pkgconfig` on `PKG_CONFIG_PATH` so the build
 finds it. The rest of the GTK stack (gtk3, cairo, glib, ...) stays
 Nix-provided — mixing was already proven fine in the direction
@@ -110,7 +110,7 @@ already fully host-native with no clash to begin with.
 
 ### End-to-end test tooling (v0.6.0)
 
-Driving the real holzi binary from a test needs three tools:
+Driving the real haex-vault binary from a test needs three tools:
 
 - `xvfb-run` (a plain `nix_packages` name) gives the app a virtual display,
   so a test run never opens a window on the developer's desktop.
@@ -132,11 +132,11 @@ look like app bugs. The derivation writes its version to
 `share/webkit-webdriver/version` next to `bin/`, so a runner can compare it
 with `pkg-config --modversion webkit2gtk-4.1` and stop with a clear message.
 Verified 2026-09-21 on CachyOS: host webkit2gtk-4.1 2.52.6 and nixpkgs
-`webkitgtk_4_1` 2.52.6 drive a debug build of holzi under Xvfb.
+`webkitgtk_4_1` 2.52.6 drive a debug build of haex-vault under Xvfb.
 
 ### libclang (v0.7.0)
 
-`llvmPackages.libclang.lib`: holzi's `haex-crdt` dependency enables rusqlite's
+`llvmPackages.libclang.lib`: haex-vault's `haex-crdt` dependency enables rusqlite's
 `preupdate_hook` so that writes to `WITHOUT ROWID` tables are observed (the
 vault events that keep open views current). That feature builds
 `libsqlite3-sys` with `bindgen`, which loads libclang at build time. CI installs
@@ -148,7 +148,7 @@ with it. Needs `nix-devshell-base` 0.8.0 or later in the consumer.
 
 ### Android builds (v0.8.0)
 
-holzi has to build for Android. `tauri android init` and `tauri android
+haex-vault has to build for Android. `tauri android init` and `tauri android
 build` need four things the shell did not have:
 
 - **The Android SDK with its NDK.** `.devshell/packages.nix` composes it from
@@ -180,16 +180,16 @@ build` need four things the shell did not have:
   changes `channel` there.
 
 The first start of the shell downloads the SDK, the NDK and the toolchain
-(a few GB). holzi's `src-tauri/build.rs` only rewrites the ELF interpreter
+(a few GB). haex-vault's `src-tauri/build.rs` only rewrites the ELF interpreter
 for `target_os = "linux"`, so Android builds are not touched by it.
 
 ### Android emulator for e2e (v0.9.0)
 
-holzi's e2e suite also runs on an Android emulator (`pnpm test:e2e --platform
+haex-vault's e2e suite also runs on an Android emulator (`pnpm test:e2e --platform
 android`), and its CI starts one: API 35, `google_apis`, x86_64, 4 cores.
 The shell now brings the same one, so the Android runs work locally too:
 
-- **`holzi-emulator`** creates the AVD `holzi-api35` the way the CI's
+- **`haex-emulator`** creates the AVD `haex-api35` the way the CI's
   emulator action does (once, under `~/.android/avd`) and starts it with
   software rendering; extra arguments go to the emulator (`-no-window`,
   `-wipe-data`, `-no-snapshot-save`). adb sees it as `emulator-5554`, the
@@ -205,14 +205,14 @@ The shell now brings the same one, so the Android runs work locally too:
   names the mismatch.
 - **`iroh-relay`** (package fragment): the relay the devices of a group
   meet through in an Android run (`iroh-relay --dev`). nixpkgs builds it
-  with the server; its version should match `iroh-relay` in holzi's
+  with the server; its version should match `iroh-relay` in haex-vault's
   `src-tauri/Cargo.lock`.
 
 The emulator and chromedriver exist for x86_64 Linux only (KVM, Chrome for
 Testing's linux64). The first start of the shell downloads the system
 image (about 3.5 GB unpacked).
 
-### `scripts/with-nix-host-bridge.sh` (holzi repo, not this molecule)
+### `scripts/with-nix-host-bridge.sh` (haex-vault repo, not this molecule)
 
 Beyond `PKG_CONFIG_PATH`, running the actual GUI app needs three more
 host bridges Nix's dynamic linker doesn't provide by default: Mesa's
@@ -239,9 +239,9 @@ packages were never missing. The rule is a `SHOULD` and installs nothing.
 
 ### llama.cpp: cmake, the NDK and static CUDA (v0.11.0)
 
-`cmake`: holzi's second local inference engine (holzi spec 070) is llama.cpp,
+`cmake`: haex-vault's second local inference engine (haex-vault spec 070) is llama.cpp,
 built from source by the `llama-cpp-sys-2` crate's build script, which drives
-CMake. The engine becomes part of holzi's default features, so every build of
+CMake. The engine becomes part of haex-vault's default features, so every build of
 the app needs `cmake` on PATH; CI's runners have it, the devShell did not.
 Verified 2026-10-31 on CachyOS: with nixpkgs' `cmake` (4.4.4) on PATH inside
 the devShell, `cargo build` of `llama-cpp-sys-2` 0.1.160 (CPU, Android NDK and
@@ -266,7 +266,7 @@ commit SHA of this publisher repository:
 {
   "source": "https://github.com/haexmas/atoms",
   "revision": "<full-40-char-sha>",
-  "molecules": ["com.github.haexmas.atoms.holzi"]
+  "molecules": ["com.github.haexmas.atoms.haex-vault"]
 }
 ```
 
@@ -274,7 +274,7 @@ Then run `spaex install`.
 
 ### UI feedback rule: no inline status lines (v0.12.0)
 
-`ui-feedback.md` is a behavior fragment with holzi's operator decisions on feedback in the
+`ui-feedback.md` is a behavior fragment with haex-vault's operator decisions on feedback in the
 UI: settings apply on selection without a save button or a "Gespeichert." line; no component,
 card or dialog shows a success message inside itself after an action, not even as a changed
 button label (the visible state is the confirmation, a success toast only when the outcome is
