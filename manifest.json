@@ -35,8 +35,8 @@
     "com.github.haexmas.atoms.nix-devshell-base": {
       "path": "nix-devshell-base"
     },
-    "com.github.haexmas.atoms.holzi": {
-      "path": "holzi"
+    "com.github.haexmas.atoms.haex-vault": {
+      "path": "haex-vault"
     },
     "com.github.haexmas.atoms.nix-rust": {
       "path": "nix-rust"

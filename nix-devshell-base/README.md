@@ -21,7 +21,7 @@ rules (build output, env files, editor/OS cruft, ...) that this molecule
 has no way to know about. Shipping `.gitignore` here would silently
 overwrite those rules on every install, repeatedly, even after an
 operator manually restores them. (Caught live adopting this molecule
-into `holzi`, whose existing `.gitignore` — including its `.env` and
+into `haex-vault`, whose existing `.gitignore` — including its `.env` and
 `.claude/` credential-safety rules — was clobbered down to one line on
 first install; v0.1.0 shipped this bug.) Add `.direnv/` to your own
 `.gitignore` once, by hand, instead.
@@ -67,7 +67,7 @@ special-casing, apart from the CUDA toolkit root described below). This exists b
 `packages` makes it resolvable at *build* time (via `pkg-config`/`-L`
 flags) but not necessarily at *runtime*, and RPATH isn't a reliable
 alternative here either — at least for
-[`com.github.haexmas.atoms.holzi`](../holzi/)'s Tauri binary, Tauri's own
+[`com.github.haexmas.atoms.haex-vault`](../haex-vault/)'s Tauri binary, Tauri's own
 build process overwrites whatever RPATH the Nix cc-wrapper would have
 auto-added with its own bundle-relative convention. Without this, a
 GUI binary linking something like `webkitgtk_4_1` compiles fine and then
@@ -78,7 +78,7 @@ being used to run a GUI app through it.
 ### CUDA toolkit root (v0.6.0+)
 
 When an adopted molecule contributes `cudatoolkit` (e.g.
-[`com.github.haexmas.atoms.holzi`](../holzi/)), the `shellHook` also
+[`com.github.haexmas.atoms.haex-vault`](../haex-vault/)), the `shellHook` also
 exports `CUDA_ROOT` pointing at it. `LD_LIBRARY_PATH` alone is not enough
 here: it is consulted by the dynamic *loader* at run time, while crates
 like `cudarc` (pulled in by `mistralrs/cuda`) look for
@@ -98,7 +98,7 @@ contribute `cudatoolkit` never touches it and gets no `CUDA_ROOT`.
 ### libclang for bindgen (v0.8.0+)
 
 When an adopted molecule contributes `llvmPackages.libclang.lib` (e.g.
-[`com.github.haexmas.atoms.holzi`](../holzi/)), the `shellHook` also exports
+[`com.github.haexmas.atoms.haex-vault`](../haex-vault/)), the `shellHook` also exports
 `LIBCLANG_PATH` pointing at its `lib/`. Crates that generate bindings at compile
 time (`bindgen` through `clang-sys`; for example `libsqlite3-sys` once rusqlite's
 `preupdate_hook` is enabled) load libclang while *building*. Without the variable
@@ -129,7 +129,7 @@ dot-directory, which is why the file lives in `.devshell/`). Two
 consequences: only one adopted molecule can own that path, so this is an
 extension point for a single contributor and not a composable category,
 and the file has to be tracked by git, because a flake only sees tracked
-files. [`com.github.haexmas.atoms.holzi`](../holzi/) is the first user
+files. [`com.github.haexmas.atoms.haex-vault`](../haex-vault/) is the first user
 (`tauri-driver` and the WebKit driver for end-to-end tests).
 
 ### Rust toolchain with cross targets (v0.9.0+)
@@ -151,7 +151,7 @@ rustup reads a root `rust-toolchain.toml`, so a consumer whose CI installs
 Rust with rustup would suddenly build with this toolchain and download its
 targets there too. Like `.devshell/packages.nix` it is an exclusive atom of
 one molecule (spaex Spec 027) and must be tracked by git.
-[`com.github.haexmas.atoms.holzi`](../holzi/) is the first user (the
+[`com.github.haexmas.atoms.haex-vault`](../haex-vault/) is the first user (the
 Android targets).
 
 Adopting v0.9.0 adds the `rust-overlay` input: run `nix flake lock` once
@@ -162,7 +162,7 @@ after `spaex install` and commit the updated `flake.lock`.
 `flake.nix`'s `import nixpkgs { ... }` sets `config.allowUnfree = true`
 (v0.4.0+). Some package-contributor molecules need a package nixpkgs
 marks unfree — e.g.
-[`com.github.haexmas.atoms.holzi`](../holzi/)'s `cudatoolkit`, gated
+[`com.github.haexmas.atoms.haex-vault`](../haex-vault/)'s `cudatoolkit`, gated
 behind the CUDA EULA. Without this, `pkgs.${name}` throws `Refusing to
 evaluate package ... because it has an unfree license` at flake
 evaluation time, before `nix develop`/`direnv` even gets to build

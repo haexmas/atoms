@@ -143,12 +143,12 @@ contributing a fragment via the composable `atoms.nix_packages` category:
   `clippy`, `rustfmt`.
 - [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`,
   `corepack_22`, `pnpm`.
-- [`com.github.haexmas.atoms.holzi`](holzi/) — holzi's own Tauri-app-specific
+- [`com.github.haexmas.atoms.haex-vault`](haex-vault/) — haex-vault's own Tauri-app-specific
   Linux system libraries, end-to-end test tooling (`tauri-driver`, the
   WebKit driver, `xvfb-run`) and the Android build environment (SDK, NDK,
   JDK, and Rust with the Android targets through
   `.devshell/rust-toolchain.toml`, which `nix-devshell-base` builds with
-  rust-overlay), plus two agent rules for holzi: run the tooling inside the
+  rust-overlay), plus two agent rules for haex-vault: run the tooling inside the
   devShell, and give UI feedback without inline status lines (errors as
   toasts, no success messages inside components).
 
