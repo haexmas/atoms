@@ -10,7 +10,6 @@
       "fragments/no-concealment-in-agent-output.md",
       "fragments/speckit-workflow-adherence.md",
       "fragments/phasing-discipline.md",
-      "fragments/adrs-for-principle-affecting-decisions.md",
       "fragments/pr-required-for-main.md",
       "fragments/merge-strategy-no-squash.md",
       "fragments/conventional-commit-messages.md",
@@ -24,5 +23,5 @@
   "id": "com.github.haexmas.atoms.spaex-constitution",
   "priority": 10,
   "spaex_version": "4",
-  "version": "2.0.1"
+  "version": "3.0.0"
 }
