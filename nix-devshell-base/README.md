@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.9.1`
+- Version: `0.9.2`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -41,7 +41,10 @@ change when contributors are added or removed.
 The read is guarded (`builtins.pathExists`): no adopted molecule
 declaring `nix_packages` is a valid "no extra packages" state, not an
 error, since this molecule's own lifecycle is independent of any
-particular package contributor's.
+particular package contributor's. The shell skips generated packages that
+nixpkgs marks unavailable for the current host. With nix-direnv, the
+`.envrc` watches the generated list and optional `.devshell/` inputs so
+changes invalidate the cached environment.
 
 ### Dotted package names (v0.5.0+)
 
@@ -88,12 +91,9 @@ time to hand the *linker* `-lcudart`/`-lnvrtc`/`-lcurand`/`-lcublas`/
 as `/usr/local/cuda`, which do not exist in a Nix-provided toolchain, and
 the link step fails.
 
-The export is gated on the contributed package *name*
-(`"cudatoolkit"` in the generated `nix-packages.json`), not on the
-package itself: comparing derivations would force `pkgs.cudatoolkit` to
-evaluate for every consumer, and it does not evaluate on platforms
-nixpkgs does not support it on (e.g. Darwin). A consumer that does not
-contribute `cudatoolkit` never touches it and gets no `CUDA_ROOT`.
+The shell only resolves `cudatoolkit` on Linux when the generated package
+list requests it. It exports `CUDA_ROOT` only when the toolkit is included
+in the shell.
 
 ### libclang for bindgen (v0.8.0+)
 
