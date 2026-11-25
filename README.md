@@ -143,6 +143,9 @@ contributing a fragment via the composable `atoms.nix_packages` category:
   `clippy`, `rustfmt`.
 - [`com.github.haexmas.atoms.nix-nodejs`](nix-nodejs/) — `nodejs_22`,
   `corepack_22`, `pnpm`.
+- [`com.github.haexmas.atoms.nix-playwright`](nix-playwright/) — the browsers Playwright
+  drives (`playwright-driver.browsers`); with `nix-devshell-base` 0.10.0+ the devShell
+  points `PLAYWRIGHT_BROWSERS_PATH` at them.
 - [`com.github.haexmas.atoms.haex-vault`](haex-vault/) — haex-vault's own Tauri-app-specific
   Linux system libraries, end-to-end test tooling (`tauri-driver`, the
   WebKit driver, `xvfb-run`) and the Android build environment (SDK, NDK,

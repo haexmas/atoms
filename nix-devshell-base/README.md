@@ -4,7 +4,7 @@ Delivers a reproducible `nix develop`/`direnv` devShell to the consumer
 repo root: `flake.nix` and `.envrc`.
 
 - Atom id: `com.github.haexmas.atoms.nix-devshell-base`
-- Version: `0.9.2`
+- Version: `0.10.0`
 - Delivered atoms: `flake.nix`, `.envrc` under `atoms.dev_environment` —
   an *exclusive* generic atom category (spaex Spec 027): materialized
   verbatim at the consumer repo root, owned by this one molecule, and
@@ -233,3 +233,18 @@ while) and loads `nix`-provisioned tools (`node`, `pnpm`, `cargo`, ...)
 into `PATH` automatically on every subsequent `cd`. Without direnv,
 `nix develop` (with flakes enabled per step 1) drops into an equivalent
 shell manually.
+
+### Playwright browsers (v0.10.0+)
+
+When a package molecule contributes `playwright-driver.browsers` (see
+[`com.github.haexmas.atoms.nix-playwright`](../nix-playwright/)), the devShell exports
+`PLAYWRIGHT_BROWSERS_PATH` (the browsers of the pinned nixpkgs) and
+`PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true`, gated on the contributed name like
+`CUDA_ROOT` and `LIBCLANG_PATH`. Without that package nothing changes.
+
+For WebGL it also exports `PLAYWRIGHT_GL_LIBRARY_PATH`, `PLAYWRIGHT_GL_EGL_VENDOR` and
+`PLAYWRIGHT_GL_DRIVERS`: the paths of Mesa's software renderer (llvmpipe) from the same
+nixpkgs. They are inert variables, deliberately **not** added to `LD_LIBRARY_PATH` (a
+second libEGL/libGL in front of the host's would affect every program started in the shell);
+a tool that launches the browser passes them to that one process (see the `nix-playwright`
+README).
