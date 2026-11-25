@@ -43,6 +43,9 @@
     },
     "com.github.haexmas.atoms.nix-nodejs": {
       "path": "nix-nodejs"
+    },
+    "com.github.haexmas.atoms.nix-playwright": {
+      "path": "nix-playwright"
     }
   }
 }

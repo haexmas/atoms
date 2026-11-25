@@ -119,6 +119,24 @@
             # with `GLIBC_PRIVATE` errors in the build script. Gated on the contributed
             # *name*, like CUDA_ROOT above.
             export LIBCLANG_PATH="${pkgs.llvmPackages.libclang.lib}/lib"
+          '' + pkgs.lib.optionalString (builtins.elem "playwright-driver.browsers" resolvedNames) ''
+            # Playwright downloads its own browsers into ~/.cache/ms-playwright unless told
+            # where they are; those binaries are neither reproducible nor runnable on every
+            # host. The browsers of *this* nixpkgs are built for exactly one Playwright
+            # release (`playwright-driver.version`): the Python or npm client must match it.
+            # The host-requirements check looks for system libraries the Nix browsers bring
+            # along themselves, so it is skipped. Gated on the contributed *name*, like
+            # CUDA_ROOT and LIBCLANG_PATH above.
+            export PLAYWRIGHT_BROWSERS_PATH="${pkgs.playwright-driver.browsers}"
+            export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
+            # WebGL in a Nix-built headless browser needs a GL stack of its own: the host's
+            # drivers are out of reach for Nix-linked binaries. Mesa (llvmpipe, software)
+            # is offered through variables only. Not on LD_LIBRARY_PATH: that would put a
+            # second libEGL/libGL in front of the host's for every program started in the
+            # shell. A tool that launches the browser passes them to that one process.
+            export PLAYWRIGHT_GL_LIBRARY_PATH="${pkgs.lib.makeLibraryPath [ pkgs.mesa pkgs.libglvnd ]}"
+            export PLAYWRIGHT_GL_EGL_VENDOR="${pkgs.mesa}/share/glvnd/egl_vendor.d/50_mesa.json"
+            export PLAYWRIGHT_GL_DRIVERS="${pkgs.mesa}/lib/dri"
           '';
         };
       });
