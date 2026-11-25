@@ -29,7 +29,9 @@ does for `cudatoolkit` and `llvmPackages.libclang.lib`:
 Playwright release (the nixpkgs attribute `playwright-driver.version`). Install the
 Python client (`pip install playwright==<version>`) or the npm client with that same
 version, or Playwright reports "Executable doesn't exist". `nix eval nixpkgs#playwright-driver.version`
-prints it for the pinned nixpkgs.
+reads the version from the current Nix registry entry, which may differ from the version
+locked by the consumer's `nix-devshell-base` flake. Compare it with that locked nixpkgs
+revision before choosing the client version.
 
 ## Adopting
 
